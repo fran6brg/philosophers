@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/15 14:05:32 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 17:03:26 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 19:33:40 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,17 +59,17 @@ void			print_status(t_philo *philo, const int status)
     int         i;
 	static int	off;
 
-    i = 0;
 	pthread_mutex_lock(&g_banquet.write);
 	if (off == 0)
 	{
+    	i = 0;
 		add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
         add_str_to_log(log, &i, "\t");
 		if (status == MAX_EAT_REACHED)
 		{
+			off = 1;
             add_str_to_log(log, &i, "max eat reached\n");
             write(1, log, i);
-			off = 1;
 			pthread_mutex_unlock(&g_banquet.write);
 			return ;
 		}

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:29 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 17:07:58 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 19:04:44 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,7 @@ int					parse_banquet_config(int ac, char **av);
 ** actions.c
 */
 
-void				lock2forks(t_philo *philo);
-void				ft_usleep(unsigned int n);
+void				ft_loop_usleep(unsigned int n);
 void				eat_sleep_think(t_philo *philo);
 
 /*

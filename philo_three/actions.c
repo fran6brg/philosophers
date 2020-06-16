@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:43 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 16:40:44 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 18:57:12 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ int				printstatus(t_philo *philo, char *str)
 	return (0);
 }
 
-static void		ft_usleep(unsigned int n)
+static void		ft_loop_usleep(unsigned int n)
 {
 	uint64_t	start;
 
@@ -84,7 +84,7 @@ int				sleep_unlock2forks(t_philo *philo)
 		return (1);
 	if (sem_post(g_context.semaforks))
 		return (1);
-	ft_usleep(g_context.time_to_sleep);
+	ft_loop_usleep(g_context.time_to_sleep);
 	if (printstatus(philo, "is thinking"))
 		return (1);
 	if ((philo->pos + 1) % 2 == 0)
@@ -118,7 +118,7 @@ int				eat(t_philo *philo)
 	if (printstatus(philo, "is eating"))
 		return (1);
 	philo->meal_count += 1;
-	ft_usleep(g_context.time_to_eat);
+	ft_loop_usleep(g_context.time_to_eat);
 	if (sem_post(philo->philosema))
 		return (1);
 	if (sem_post(philo->philosemaeatcount))

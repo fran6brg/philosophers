@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:17 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 17:03:26 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 19:37:28 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ int				set_philos()
 	while (i < g_banquet.nb_philos)
 	{
 		g_banquet.philos[i].pos = i;
-		g_banquet.philos[i].last_meal = 0;
 		g_banquet.philos[i].meal_count = 0;
+		pthread_mutex_lock(&g_banquet.philos[i].eat_counter);
+		g_banquet.philos[i].last_meal = 0;
+		pthread_mutex_init(&g_banquet.philos[i].eat_counter, NULL);
 		g_banquet.philos[i].lfork = i;
 		g_banquet.philos[i].rfork = (i + 1 != g_banquet.nb_philos) ? i + 1 : 0;
 		pthread_mutex_init(&g_banquet.philos[i].eating, NULL);
-		pthread_mutex_init(&g_banquet.philos[i].eat_counter, NULL);
-		pthread_mutex_lock(&g_banquet.philos[i].eat_counter);
 		i++;
 	}
 	return (RET_SUCCESS);
@@ -48,7 +48,8 @@ int				set_mutex(void)
 	int			i;
 
 	g_banquet.forks = NULL;
-	if ((g_banquet.forks = malloc(sizeof(pthread_mutex_t) * g_banquet.nb_philos)) == 0)
+	if ((g_banquet.forks = malloc(sizeof(pthread_mutex_t)
+	* g_banquet.nb_philos)) == 0)
 		return (RET_ERROR);
 	i = -1;
 	while (++i < g_banquet.nb_philos)
