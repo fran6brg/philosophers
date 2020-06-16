@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: henri <henri@student.42.fr>                +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/03/26 16:23:05 by henri             #+#    #+#             */
-/*   Updated: 2020/05/14 22:30:28 by henri            ###   ########.fr       */
+/*   Created: 2020/06/13 16:40:34 by francisberg       #+#    #+#             */
+/*   Updated: 2020/06/16 15:50:21 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int					strcompare(char *s1, char *s2)
+int					ft_strcomp(char *s1, char *s2)
 {
 	int i;
 
@@ -22,49 +22,29 @@ int					strcompare(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void				putuint64_t(int fd, uint64_t nbr)
-{
-	int				i;
-	char			tmp[15];
-
-	if (nbr == 0)
-		tmp[0] = '0';
-	i = 0;
-	while (nbr != 0)
-	{
-		tmp[i++] = '0' + (nbr % 10);
-		nbr /= 10;
-	}
-	i = (i > 0) ? i - 1 : i;
-	while (i >= 0)
-		write(fd, &tmp[i--], 1);
-}
-
 /*
 **	man gettimeofday
 **	tv_sec = seconds since Jan. 1, 1970
 **	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
 **  Avec #include <inttypes.h>
-** 	printf("Timer : %" PRIu64 "\n", chrono());
+** 	printf("start_time : %" PRIu64 "\n", get_time());
 */
 
-uint64_t			chrono(void)
+uint64_t			get_time(void)
 {
-	uint64_t		time;
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	time = (tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000);
-	return (time);
+	return ((tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000));
 }
 
-void				putstrfd(char *str, int fd)
+void				ft_putstrfd(char *str, int fd)
 {
-	while (*str)
-	{
-		write(fd, str, 1);
-		str++;
-	}
+	int i;
+
+	i = -1;	
+	while (str[++i])
+		write(fd, &str[i], 1);
 }
 
 int					ft_atoi(char *str)

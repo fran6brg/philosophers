@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: henri <henri@student.42.fr>                +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/03/27 16:43:10 by henri             #+#    #+#             */
-/*   Updated: 2020/06/07 12:11:37 by henri            ###   ########.fr       */
+/*   Created: 2020/06/13 16:39:14 by francisberg       #+#    #+#             */
+/*   Updated: 2020/06/13 23:24:36 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,10 @@ void			clear(void)
 			sem_unlink(name);
 		}
 	}
-	sem_unlink("/SEMAFORKS");
-	sem_unlink("/SEMAWRITE");
-	sem_unlink("/SEMADEATH");
-	sem_unlink("/ASKTAKEFORKS");
+	sem_unlink(SEMAFORKS);
+	sem_unlink(SEMAWRITE);
+	sem_unlink(SEMADEATH);
+	sem_unlink(ASKTAKEFORKS);
 	free(g_context.philos);
 	g_context.philos = NULL;
 }

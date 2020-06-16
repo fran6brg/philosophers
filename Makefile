@@ -6,7 +6,7 @@
 #    By: francisberger <francisberger@student.42    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/07 17:41:37 by fberger           #+#    #+#              #
-#    Updated: 2020/06/12 01:38:31 by francisberg      ###   ########.fr        #
+#    Updated: 2020/06/16 15:59:47 by francisberg      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,9 @@ FLAGS 		= 	-Wall -Wextra -Werror
 SRCS_1		=	philo_one/actions.c \
 				philo_one/init.c \
 				philo_one/main.c \
-				philo_one/utils.c
+				philo_one/logs.c \
+				philo_one/utils.c \
+				philo_one/end.c
 OBJS_1		= 	$(SRCS_1:.c=.o)
 EXEC_1		=	philo_one/philo_one
 

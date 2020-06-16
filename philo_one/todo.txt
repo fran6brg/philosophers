@@ -1,0 +1,7 @@
+todo
+** On usleep(1000) est INDISPENSABLE ?
+
+
+ok:
+- protéger les retour sur pthread mutex
+- bufferiser status

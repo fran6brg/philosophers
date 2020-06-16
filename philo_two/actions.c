@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: henri <henri@student.42.fr>                +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/03/28 15:38:15 by henri             #+#    #+#             */
-/*   Updated: 2020/06/07 17:48:54 by henri            ###   ########.fr       */
+/*   Created: 2020/06/13 16:41:36 by francisberg       #+#    #+#             */
+/*   Updated: 2020/06/13 17:33:20 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,7 @@ int				sleep_unlock2forks(t_philo *philo)
 	ft_usleep(g_context.time_to_sleep);
 	if (printstatus(philo, "is thinking"))
 		return (1);
-	if ((philo->pos + 1) % 2 == 0)
-		usleep(500);
+	usleep(500);
 	return (0);
 }
 
