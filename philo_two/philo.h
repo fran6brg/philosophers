@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:38:57 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 16:38:58 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 17:04:38 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,53 +23,114 @@
 # include <semaphore.h>
 # include <fcntl.h>
 
-# define PHI_INIT		0
-# define EAT_INIT		1
 
-# define SEMAFORKS		"/SEMAFORKS"
-# define SEMAWRITE		"/SEMAWRITE"
-# define SEMADEATH		"/SEMADEATH"
-# define TAKEFORKS		"/TAKEFORKS"
-# define ASKTAKEFORKS	"/ASKTAKEFORKS"
+# define RET_SUCCESS		0
+# define RET_ERROR			1
 
-typedef struct		s_philo
+# define HAS_TAKEN_A_FORK	2
+# define IS_EATING			3
+# define IS_SLEEPING		4
+# define IS_THINKING		5
+# define HAS_LEFT_ITS_FORKS	6
+# define MAX_EAT_REACHED	7
+# define DIED				8
+
+# define PHI_INIT			0
+# define EAT_INIT			1
+
+# define FORKS				"/FORKS"
+# define WRITE				"/WRITE"
+# define DEATH				"/DEATH"
+# define TAKEFORKS			"/TAKEFORKS"
+# define ASKTAKEFORKS		"/ASKTAKEFORKS"
+
+typedef struct				s_philo
 {
-	int				pos;
-	int				meal_count;
-	uint64_t		last_meal;
-	uint64_t		remainingtime;
-	sem_t			*philosema;
-	sem_t			*philosemaeatcount;
-}					t_philo;
+	int						pos;
+	int						meal_count;
+	uint64_t				last_meal;
+	uint64_t				death_time;
+	sem_t					*eating;
+	sem_t					*meat_count;
+}							t_philo;
 
-typedef struct		s_context
+typedef struct				s_context
 {
-	int				philosophers;
-	int				globaleatcoutner;
-	int				maxeat;
-	uint64_t		timer;
-	uint64_t		time_to_die;
-	uint64_t		time_to_eat;
-	uint64_t		time_to_sleep;
-	t_philo			*philos;
-	sem_t			*semaforks;
-	sem_t			*semaskforks;
-	sem_t			*semadeath;
-	sem_t			*semawrite;
-}					t_context;
+	int						nb_philos;
+	int						globaleatcoutner;
+	int						max_eat;
+	uint64_t				start_time;
+	uint64_t				time_to_die;
+	uint64_t				time_to_eat;
+	uint64_t				time_to_sleep;
+	t_philo					*philos;
+	sem_t					*forks;
+	sem_t					*ask_forks;
+	sem_t					*death;
+	sem_t					*write;
+}							t_context;
 
-t_context			g_context;
+t_context					g_banquet;
 
-void				putstrfd(char *str, int fd);
-int					ft_atoi(char *str);
-int					initcontext(int ac, char **av);
-void				putuint64_t(int fd, uint64_t nbr);
-uint64_t			chrono(void);
-int					strcompare(char *s1, char *s2);
-int					printstatus(t_philo *philo, char *str);
-int					lock2forks(t_philo *philo);
-int					sleep_unlock2forks(t_philo *philo);
-int					eat(t_philo *philo);
-void				clear(void);
+/*
+** main.c
+*/
+
+void						*handle_max_eat(void *arg);
+void						*handle_death(void *philo_uncasted);
+void						*philo_life(void *philo_uncasted);
+int							start_banquet(void);
+int							main(int ac, char **av);
+
+/*
+** init.c
+*/
+
+void						semanames(char *name, int id, int eat);
+int							initphilos(void);
+int							initsemas(int philonum);
+int							parse_banquet_config(int ac, char **av);
+
+/*
+** actions.c
+*/
+
+void						ft_loop_usleep(unsigned int n);
+int							sleep_think(t_philo *philo);
+int							eat(t_philo *philo);
+
+/*
+** logs.c
+*/
+
+void						add_nb_to_log(char *buf, int *index, uint64_t n);
+void						add_str_to_log(char *buf, int *i, char *str);
+void						add_status_to_log(char *log, int *i, const int status);
+int							print_status(t_philo *philo, const int status);
+
+/*
+** utils.c
+*/
+
+/*
+** end.c
+*/
+
+int 						ft_printerror(char *msg, int clean);
+int							ft_clean(void);
+
+/*
+** ----------
+*/
+
+void						ft_putstrfd(char *str, int fd);
+int							ft_atoi(char *str);
+void						putuint64_t(int fd, uint64_t nbr);
+uint64_t					get_time(void);
+int							strcompare(char *s1, char *s2);
+int							printstatus(t_philo *philo, char *str);
+int							lock2forks(t_philo *philo);
+int							sleep_think(t_philo *philo);
+int							eat(t_philo *philo);
 
 #endif

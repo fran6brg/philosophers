@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/14 00:29:52 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 20:39:27 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,35 +22,35 @@
 ** on le relock ici en incrémentant i
 ** On itère de manière croissant sur les philos donc si le philo 5 mange avant
 ** le 2, pas de problème car le mutex du 5 sera delock instantanément
-** On fait cela "context.maxeat" fois
+** On fait cela "context.max_eat" fois
 **
 ** void *arg ne sert à rien, c'est juste qu'on est forcé de mettre un argument
 ** par respect pour le prototype
 */
 
-void			*watchingmaxeat(void *arg)
+void			*handle_max_eat(void *arg)
 {
 	int			i;
 	int			max;
 
 	max = -1;
 	(void)arg;
-	while (++max < g_context.maxeat)
+	while (++max < g_banquet.max_eat)
 	{
 		i = -1;
-		while (++i < g_context.philosophers)
-			if (sem_wait(g_context.philos[i].philosemaeatcount))
+		while (++i < g_banquet.nb_philos)
+			if (sem_wait(g_banquet.philos[i].philosemaeatcount))
 				return ((void*)1);
 	}
 	if (printstatus(NULL, "maximum meal reached"))
 		return ((void*)1);
-	if (sem_post(g_context.semadeath))
+	if (sem_post(g_banquet.death))
 		return ((void*)1);
 	return ((void*)0);
 }
 
 /*
-** La fonction watching() surveille qu'aucun philosophe ne meure
+** La fonction handle_death() surveille qu'aucun philosophe ne meure
 ** Un philosophe meurt s'il n'est pas entrain de manger et que son temps de
 ** survie depuis le dernier est depassé
 ** Si c'est le cas, on unlock mutexdeath qui fait que le main se termine
@@ -59,11 +59,11 @@ void			*watchingmaxeat(void *arg)
 ** On usleep(1000) (indispensable) pour pas toujours avoir le
 ** philo->philomutex de locké
 ** Pas besoin de savoir si le philo est en train de manger car de toute facon
-** le mutex global est lock donc s'il mange, le thread watching pourra pas
+** le mutex global est lock donc s'il mange, le thread handle_death pourra pas
 ** check si le philo meurt
 */
 
-static void		*watching(void *philo_uncasted)
+static void		*handle_death(void *philo_uncasted)
 {
 	t_philo		*philo;
 
@@ -77,7 +77,7 @@ static void		*watching(void *philo_uncasted)
 			printstatus(philo, "died");
 			if (sem_post(philo->philosema))
 				return ((void*)1);
-			if (sem_post(g_context.semadeath))
+			if (sem_post(g_banquet.death))
 				return ((void*)1);
 			return ((void*)0);
 		}
@@ -97,18 +97,18 @@ static void		*watching(void *philo_uncasted)
 ** 	- Si oui le philo mange, libère les 2 fourchettes, dors puis pense
 */
 
-static int		noeatlimit(void *philo_uncasted)
+static int		philo_life(void *philo_uncasted)
 {
 	t_philo		*philo;
 	pthread_t	subthread;
 	int			usecwait;
 
 	philo = (t_philo*)philo_uncasted;
-	usecwait = (philo->pos - g_context.philosophers) * -100;
+	usecwait = (philo->pos - g_banquet.nb_philos) * -100;
 	usleep(usecwait);
 	philo->last_meal = chrono();
-	philo->remainingtime = philo->last_meal + g_context.time_to_die;
-	if (pthread_create(&subthread, NULL, &watching, philo))
+	philo->remainingtime = philo->last_meal + g_banquet.time_to_die;
+	if (pthread_create(&subthread, NULL, &handle_death, philo))
 		return (1);
 	pthread_detach(subthread);
 	while (42)
@@ -126,15 +126,15 @@ static int		start(void)
 	int			i;
 
 	i = -1;
-	g_context.timer = chrono();
-	while (++i < g_context.philosophers)
+	g_banquet.timer = chrono();
+	while (++i < g_banquet.nb_philos)
 	{
-		g_context.philos[i].philopid = fork();
-		if (g_context.philos[i].philopid < 0)
+		g_banquet.philos[i].philopid = fork();
+		if (g_banquet.philos[i].philopid < 0)
 			return (1);
-		else if (g_context.philos[i].philopid == 0)
+		else if (g_banquet.philos[i].philopid == 0)
 		{
-			noeatlimit(&g_context.philos[i]);
+			philo_life(&g_banquet.philos[i]);
 			exit(0);
 		}
 	}
@@ -143,12 +143,12 @@ static int		start(void)
 
 /*
 ** Explication globale philo_three
-** On execute threadmaxeat() qui lance un thread en loop infinie pour gerer
+** On execute threadmax_eat() qui lance un thread en loop infinie pour gerer
 ** le eat maximum qui est définit par les semaphores
 ** (donc accessible depuis tous les thread et processus)
 ** suivant : philos[i].philosemaeatcount
 **
-** Ensuite on start() qui fork() pour chaque philo du quel on call noeatlimit()
+** Ensuite on start() qui fork() pour chaque philo du quel on call philo_life()
 ** dans laquelle on essaie en loop infinie de manger etc ...
 **
 ** Usefull commands : pkill -f <match processus name>
@@ -164,21 +164,21 @@ int				main(int ac, char **av)
 		putstrfd("Error: wrong number of arguments\n", 2);
 		return (1);
 	}
-	if (initcontext(ac, av))
+	if (parse_banquet_config(ac, av))
 	{
 		clear();
 		putstrfd("Error: initialization\n", 2);
 		return (1);
 	}
-	if (start() || threadmaxeat())
+	if (start() || threadmax_eat())
 	{
 		clear();
 		putstrfd("Error: core function\n", 2);
 		return (1);
 	}
-	sem_wait(g_context.semadeath);
-	while (i < g_context.philosophers)
-		kill(g_context.philos[i++].philopid, SIGKILL);
+	sem_wait(g_banquet.death);
+	while (i < g_banquet.nb_philos)
+		kill(g_banquet.philos[i++].philopid, SIGKILL);
 	clear();
 	return (0);
 }

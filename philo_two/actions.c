@@ -6,49 +6,21 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:36 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 18:57:12 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 17:03:59 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int				printstatus(t_philo *philo, char *str)
-{
-	static int	x;
-
-	if (sem_wait(g_context.semawrite))
-		return (1);
-	if (x == 0)
-	{
-		putuint64_t(1, chrono() - g_context.timer);
-		write(1, "\t", 1);
-		if (str[0] == 'm')
-		{
-			write(1, "max eat reached\n", 16);
-			x = 1;
-			return (sem_post(g_context.semawrite) == 0 ? 0 : 1);
-		}
-		putuint64_t(1, ((uint64_t)philo->pos + 1));
-		write(1, " ", 1);
-		putstrfd(str, 1);
-		write(1, "\n", 1);
-		if (str[0] == 'd')
-			x = 1;
-	}
-	if (sem_post(g_context.semawrite))
-		return (1);
-	return (x == 1 ? 1 : 0);
-}
-
-static void		ft_loop_usleep(unsigned int n)
+void		ft_loop_usleep(unsigned int n)
 {
 	uint64_t	start;
 
-	start = chrono();
+	start = get_time();
 	while (1)
 	{
 		usleep(50);
-		if (chrono() - start >= n)
+		if (get_time() - start >= n)
 			break ;
 	}
 }
@@ -58,19 +30,19 @@ static void		ft_loop_usleep(unsigned int n)
 ** Sachant que les fourchettes sont au centre et non entre chaque philosophe
 */
 
-int				sleep_unlock2forks(t_philo *philo)
+int				sleep_think(t_philo *philo)
 {
-	if (printstatus(philo, "is sleeping"))
-		return (1);
-	if (sem_post(g_context.semaforks))
-		return (1);
-	if (sem_post(g_context.semaforks))
-		return (1);
-	ft_loop_usleep(g_context.time_to_sleep);
-	if (printstatus(philo, "is thinking"))
-		return (1);
+	if (print_status(philo, IS_SLEEPING))
+		return (RET_ERROR);
+	if (sem_post(g_banquet.forks))
+		return (RET_ERROR);
+	if (sem_post(g_banquet.forks))
+		return (RET_ERROR);
+	ft_loop_usleep(g_banquet.time_to_sleep);
+	if (print_status(philo, IS_THINKING))
+		return (RET_ERROR);
 	usleep(500);
-	return (0);
+	return (RET_SUCCESS);
 }
 
 /*
@@ -80,29 +52,29 @@ int				sleep_unlock2forks(t_philo *philo)
 
 int				eat(t_philo *philo)
 {
-	if (sem_wait(g_context.semaskforks))
-		return (1);
-	if (sem_wait(g_context.semaforks))
-		return (1);
-	if (printstatus(philo, "has taken a fork"))
-		return (1);
-	if (sem_wait(g_context.semaforks))
-		return (1);
-	if (printstatus(philo, "has taken a fork"))
-		return (1);
-	if (sem_post(g_context.semaskforks))
-		return (1);
-	if (sem_wait(philo->philosema))
-		return (1);
-	philo->last_meal = chrono();
-	philo->remainingtime = philo->last_meal + g_context.time_to_die;
-	if (printstatus(philo, "is eating"))
-		return (1);
+	if (sem_wait(g_banquet.ask_forks))
+		return (RET_ERROR);
+	if (sem_wait(g_banquet.forks))
+		return (RET_ERROR);
+	if (print_status(philo, HAS_TAKEN_A_FORK))
+		return (RET_ERROR);
+	if (sem_wait(g_banquet.forks))
+		return (RET_ERROR);
+	if (print_status(philo, HAS_TAKEN_A_FORK))
+		return (RET_ERROR);
+	if (sem_post(g_banquet.ask_forks))
+		return (RET_ERROR);
+	if (sem_wait(philo->eating))
+		return (RET_ERROR);
+	philo->last_meal = get_time();
+	philo->death_time = philo->last_meal + g_banquet.time_to_die;
+	if (print_status(philo, IS_EATING))
+		return (RET_ERROR);
 	philo->meal_count += 1;
-	ft_loop_usleep(g_context.time_to_eat);
-	if (sem_post(philo->philosema))
-		return (1);
-	if (sem_post(philo->philosemaeatcount))
-		return (1);
-	return (0);
+	ft_loop_usleep(g_banquet.time_to_eat);
+	if (sem_post(philo->eating))
+		return (RET_ERROR);
+	if (sem_post(philo->meat_count))
+		return (RET_ERROR);
+	return (RET_SUCCESS);
 }

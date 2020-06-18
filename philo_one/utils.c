@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:34 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 19:36:33 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 16:04:08 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,22 +20,6 @@ int					ft_strcomp(char *s1, char *s2)
 	while (s1[i] && s1[i] == s2[i])
 		i++;
 	return (s1[i] - s2[i]);
-}
-
-/*
-**	man gettimeofday
-**	tv_sec = seconds since Jan. 1, 1970
-**	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
-**  Avec #include <inttypes.h>
-** 	printf("start_time : %" PRIu64 "\n", get_time());
-*/
-
-uint64_t			get_time(void)
-{
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000));
 }
 
 void				ft_putstrfd(char *str, int fd)

@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/15 14:05:32 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 16:04:15 by francisberg      ###   ########.fr       */
+/*   Created: 2020/06/16 20:07:04 by francisberg       #+#    #+#             */
+/*   Updated: 2020/06/18 16:09:15 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,13 +69,14 @@ void            add_status_to_log(char *log, int *i, const int status)
         }
 }
 
-void			print_status(t_philo *philo, const int status)
+int				print_status(t_philo *philo, const int status)
 {
 	char	    log[50] = {0};
     int         i;
 	static int	off;
 
-	pthread_mutex_lock(&g_banquet.write);
+	if (sem_wait(g_banquet.write))
+		return (RET_ERROR);
 	if (off == 0)
 	{
     	i = 0;
@@ -86,8 +87,7 @@ void			print_status(t_philo *philo, const int status)
 			off = 1;
             add_str_to_log(log, &i, "max eat reached\n");
             write(1, log, i);
-			pthread_mutex_unlock(&g_banquet.write);
-			return ;
+			return (sem_post(g_banquet.write) == 0 ? 0 : 1);
 		}
 		add_nb_to_log(log, &i, philo->pos + 1);
         add_str_to_log(log, &i, " ");
@@ -96,5 +96,7 @@ void			print_status(t_philo *philo, const int status)
             off = 1;
         write(1, log, i);
 	}
-	pthread_mutex_unlock(&g_banquet.write);
+	if (sem_post(g_banquet.write))
+		return (RET_ERROR);
+	return (off == 1 ? 1 : 0);
 }

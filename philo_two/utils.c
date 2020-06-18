@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:09 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 16:39:09 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 16:12:05 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,25 +40,7 @@ void				putuint64_t(int fd, uint64_t nbr)
 		write(fd, &tmp[i--], 1);
 }
 
-/*
-**	man gettimeofday
-**	tv_sec = seconds since Jan. 1, 1970
-**	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
-**  Avec #include <inttypes.h>
-** 	printf("Timer : %" PRIu64 "\n", chrono());
-*/
-
-uint64_t			chrono(void)
-{
-	uint64_t		time;
-	struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	time = (tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000);
-	return (time);
-}
-
-void				putstrfd(char *str, int fd)
+void				ft_putstrfd(char *str, int fd)
 {
 	while (*str)
 	{

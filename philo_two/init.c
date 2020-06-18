@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:14 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 23:24:36 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 17:01:39 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 ** ou alors 1 si philo-eat-id
 */
 
-static void		semanames(char *name, int id, int eat)
+void		semanames(char *name, int id, int eat)
 {
 	int			i;
 	const char	basename1[6] = "philo-";
@@ -40,71 +40,47 @@ static void		semanames(char *name, int id, int eat)
 	name[i] = '\0';
 }
 
-void			clear(void)
-{
-	int			i;
-	char		name[50];
-
-	i = -1;
-	if (g_context.philos)
-	{
-		while (++i < g_context.philosophers)
-		{
-			semanames(name, i + 1, PHI_INIT);
-			sem_unlink(name);
-			semanames(name, i + 1, EAT_INIT);
-			sem_unlink(name);
-		}
-	}
-	sem_unlink(SEMAFORKS);
-	sem_unlink(SEMAWRITE);
-	sem_unlink(SEMADEATH);
-	sem_unlink(ASKTAKEFORKS);
-	free(g_context.philos);
-	g_context.philos = NULL;
-}
-
-static int		initphilos(void)
+int				initphilos(void)
 {
 	int			i;
 	char		name[50];
 
 	i = 0;
-	while (i < g_context.philosophers)
+	while (i < g_banquet.nb_philos)
 	{
-		g_context.philos[i].pos = i;
-		g_context.philos[i].last_meal = 0;
-		g_context.philos[i].meal_count = 0;
+		g_banquet.philos[i].pos = i;
+		g_banquet.philos[i].last_meal = 0;
+		g_banquet.philos[i].meal_count = 0;
 		semanames(name, i + 1, PHI_INIT);
 		sem_unlink(name);
-		if ((g_context.philos[i].philosema =
+		if ((g_banquet.philos[i].eating =
 			sem_open(name, O_CREAT, 0666, 1)) == SEM_FAILED)
-			return (1);
+			return (RET_ERROR);
 		semanames(name, i + 1, EAT_INIT);
 		sem_unlink(name);
-		if ((g_context.philos[i].philosemaeatcount =
+		if ((g_banquet.philos[i].meat_count =
 			sem_open(name, O_CREAT, 0666, 0)) == SEM_FAILED)
-			return (1);
+			return (RET_ERROR);
 		i++;
 	}
-	return (0);
+	return (RET_SUCCESS);
 }
 
-static int		initsemas(int philonum)
+int				initsemas(int philonum)
 {
-	if ((g_context.semaforks =
-		sem_open(SEMAFORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
-		return (1);
-	if ((g_context.semaskforks =
+	if ((g_banquet.forks =
+		sem_open(FORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
+		return (RET_ERROR);
+	if ((g_banquet.ask_forks =
 		sem_open(ASKTAKEFORKS, O_CREAT, 0666, 1)) == SEM_FAILED)
-		return (1);
-	if ((g_context.semawrite =
-		sem_open(SEMAWRITE, O_CREAT, 0666, 1)) == SEM_FAILED)
-		return (1);
-	if ((g_context.semadeath =
-		sem_open(SEMADEATH, O_CREAT, 0666, 0)) == SEM_FAILED)
-		return (1);
-	return (0);
+		return (RET_ERROR);
+	if ((g_banquet.write =
+		sem_open(WRITE, O_CREAT, 0666, 1)) == SEM_FAILED)
+		return (RET_ERROR);
+	if ((g_banquet.death =
+		sem_open(DEATH, O_CREAT, 0666, 0)) == SEM_FAILED)
+		return (RET_ERROR);
+	return (RET_SUCCESS);
 }
 
 /*
@@ -122,26 +98,26 @@ static int		initsemas(int philonum)
 ** }
 */
 
-int				initcontext(int ac, char **av)
+int				parse_banquet_config(int ac, char **av)
 {
-	clear();
-	memset(&g_context, 0, sizeof(g_context));
-	g_context.philosophers = ft_atoi(av[1]);
-	g_context.time_to_die = ft_atoi(av[2]);
-	g_context.time_to_eat = ft_atoi(av[3]);
-	g_context.time_to_sleep = ft_atoi(av[4]);
-	g_context.maxeat = (ac == 6) ? ft_atoi(av[5]) : 0;
-	if (g_context.philosophers < 2 || g_context.philosophers > 200 ||
-		g_context.time_to_die < 60 || g_context.time_to_eat < 60 ||
-		g_context.time_to_sleep < 60 || g_context.maxeat < 0)
-		return (1);
-	g_context.philos = NULL;
-	g_context.globaleatcoutner = 0;
-	if (!(g_context.philos = malloc(sizeof(t_philo) * g_context.philosophers)))
-		return (1);
+	ft_clean();
+	memset(&g_banquet, 0, sizeof(g_banquet));
+	g_banquet.nb_philos = ft_atoi(av[1]);
+	g_banquet.time_to_die = ft_atoi(av[2]);
+	g_banquet.time_to_eat = ft_atoi(av[3]);
+	g_banquet.time_to_sleep = ft_atoi(av[4]);
+	g_banquet.max_eat = (ac == 6) ? ft_atoi(av[5]) : 0;
+	if (g_banquet.nb_philos < 2 || g_banquet.nb_philos > 200 ||
+		g_banquet.time_to_die < 60 || g_banquet.time_to_eat < 60 ||
+		g_banquet.time_to_sleep < 60 || g_banquet.max_eat < 0)
+		return (RET_ERROR);
+	g_banquet.philos = NULL;
+	g_banquet.globaleatcoutner = 0;
+	if (!(g_banquet.philos = malloc(sizeof(t_philo) * g_banquet.nb_philos)))
+		return (RET_ERROR);
 	if (initphilos())
-		return (1);
-	if (initsemas(g_context.philosophers))
-		return (1);
-	return (0);
+		return (RET_ERROR);
+	if (initsemas(g_banquet.nb_philos))
+		return (RET_ERROR);
+	return (RET_SUCCESS);
 }

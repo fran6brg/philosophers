@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:21 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 17:08:02 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 20:39:27 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 ** on le relock ici en incrémentant i
 ** On itère de manière croissante sur les philos donc si le philo 5 mange avant
 ** le 2, pas de problème car le mutex du 5 sera delock instantanément
-** On fait cela "banquet.maxeat" fois
+** On fait cela "banquet.max_eat" fois
 **
 ** void *arg ne sert à rien, c'est juste qu'on est forcé de mettre un argument
 ** par respect pour le prototype

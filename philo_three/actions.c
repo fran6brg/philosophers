@@ -6,24 +6,24 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:43 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 18:57:12 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 20:39:27 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** threadmaxeat() est call en début de main pour lancer le thread en charge
+** threadmax_eat() est call en début de main pour lancer le thread en charge
 ** du check du semaphore gérant le maximum de eat
 */
 
-int				threadmaxeat(void)
+int				threadmax_eat(void)
 {
 	pthread_t	thread;
 
-	if (g_context.maxeat)
+	if (g_banquet.max_eat)
 	{
-		if (pthread_create(&thread, NULL, &watchingmaxeat, NULL))
+		if (pthread_create(&thread, NULL, &handle_max_eat, NULL))
 			return (1);
 		pthread_detach(thread);
 	}
@@ -43,11 +43,11 @@ int				threadmaxeat(void)
 
 int				printstatus(t_philo *philo, char *str)
 {
-	if (sem_wait(g_context.semawrite))
+	if (sem_wait(g_banquet.write))
 		return (1);
-	if (sem_wait(g_context.semaprocessdeath))
+	if (sem_wait(g_banquet.semaprocessdeath))
 		return (1);
-	putuint64_t(1, chrono() - g_context.timer);
+	putuint64_t(1, chrono() - g_banquet.timer);
 	write(1, "\t", 1);
 	if (strcompare(str, "maximum meal reached") != 0)
 		putuint64_t(1, ((uint64_t)philo->pos + 1));
@@ -56,9 +56,9 @@ int				printstatus(t_philo *philo, char *str)
 	write(1, "\n", 1);
 	if (strcompare(str, "maximum meal reached") != 0 &&
 		strcompare(str, "died") != 0)
-		if (sem_post(g_context.semaprocessdeath))
+		if (sem_post(g_banquet.semaprocessdeath))
 			return (1);
-	if (sem_post(g_context.semawrite))
+	if (sem_post(g_banquet.write))
 		return (1);
 	return (0);
 }
@@ -80,11 +80,11 @@ int				sleep_unlock2forks(t_philo *philo)
 {
 	if (printstatus(philo, "is sleeping"))
 		return (1);
-	if (sem_post(g_context.semaforks))
+	if (sem_post(g_banquet.semaforks))
 		return (1);
-	if (sem_post(g_context.semaforks))
+	if (sem_post(g_banquet.semaforks))
 		return (1);
-	ft_loop_usleep(g_context.time_to_sleep);
+	ft_loop_usleep(g_banquet.time_to_sleep);
 	if (printstatus(philo, "is thinking"))
 		return (1);
 	if ((philo->pos + 1) % 2 == 0)
@@ -99,26 +99,26 @@ int				sleep_unlock2forks(t_philo *philo)
 
 int				eat(t_philo *philo)
 {
-	if (sem_wait(g_context.semaskforks))
+	if (sem_wait(g_banquet.semaskforks))
 		return (1);
-	if (sem_wait(g_context.semaforks))
-		return (1);
-	if (printstatus(philo, "has taken a fork"))
-		return (1);
-	if (sem_wait(g_context.semaforks))
+	if (sem_wait(g_banquet.semaforks))
 		return (1);
 	if (printstatus(philo, "has taken a fork"))
 		return (1);
-	if (sem_post(g_context.semaskforks))
+	if (sem_wait(g_banquet.semaforks))
+		return (1);
+	if (printstatus(philo, "has taken a fork"))
+		return (1);
+	if (sem_post(g_banquet.semaskforks))
 		return (1);
 	if (sem_wait(philo->philosema))
 		return (1);
 	philo->last_meal = chrono();
-	philo->remainingtime = philo->last_meal + g_context.time_to_die;
+	philo->remainingtime = philo->last_meal + g_banquet.time_to_die;
 	if (printstatus(philo, "is eating"))
 		return (1);
 	philo->meal_count += 1;
-	ft_loop_usleep(g_context.time_to_eat);
+	ft_loop_usleep(g_banquet.time_to_eat);
 	if (sem_post(philo->philosema))
 		return (1);
 	if (sem_post(philo->philosemaeatcount))

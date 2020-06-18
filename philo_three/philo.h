@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:09 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 16:41:10 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/16 20:39:27 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@
 # include <signal.h>
 # include <fcntl.h>
 
-# define PHI_INIT		0
-# define EAT_INIT		1
+# define PHI_INIT			0
+# define EAT_INIT			1
 
-# define SEMAFORKS		"/SEMAFORKS"
-# define SEMAWRITE		"/SEMAWRITE"
-# define SEMADEATH		"/SEMADEATH"
+# define SEMAFORKS			"/SEMAFORKS"
+# define WRITE				"/WRITE"
+# define DEATH				"/DEATH"
 # define SEMAPROCESSDEATH	"/SEMAPROCESSDEATH"
-# define ASKTAKEFORKS	"/ASKTAKEFORKS"
+# define ASKTAKEFORKS		"/ASKTAKEFORKS"
 
 typedef struct		s_philo
 {
@@ -56,9 +56,9 @@ typedef struct		s_philo
 
 typedef struct		s_context
 {
-	int				philosophers;
+	int				nb_philos;
 	int				globaleatcoutner;
-	int				maxeat;
+	int				max_eat;
 	uint64_t		timer;
 	uint64_t		time_to_die;
 	uint64_t		time_to_eat;
@@ -66,16 +66,16 @@ typedef struct		s_context
 	t_philo			*philos;
 	sem_t			*semaforks;
 	sem_t			*semaskforks;
-	sem_t			*semadeath;
-	sem_t			*semawrite;
+	sem_t			*death;
+	sem_t			*write;
 	sem_t			*semaprocessdeath;
 }					t_context;
 
-t_context			g_context;
+t_context			g_banquet;
 
 void				putstrfd(char *str, int fd);
 int					ft_atoi(char *str);
-int					initcontext(int ac, char **av);
+int					parse_banquet_config(int ac, char **av);
 void				putuint64_t(int fd, uint64_t nbr);
 uint64_t			chrono(void);
 int					strcompare(char *s1, char *s2);
@@ -84,7 +84,7 @@ int					lock2forks(t_philo *philo);
 int					sleep_unlock2forks(t_philo *philo);
 int					eat(t_philo *philo);
 void				clear(void);
-int					threadmaxeat(void);
-void				*watchingmaxeat(void *arg);
+int					threadmax_eat(void);
+void				*handle_max_eat(void *arg);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:29 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 19:04:44 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/18 16:03:57 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void				eat_sleep_think(t_philo *philo);
 ** logs.c
 */
 
+uint64_t			get_time(void);
 void				add_nb_to_log(char *buf, int *index, uint64_t n);
 void				add_str_to_log(char *buf, int *i, char *str);
 void				add_status_to_log(char *log, int *i, const int status);
@@ -108,7 +109,6 @@ void				print_status(t_philo *philo, const int status);
 */
 
 int					ft_strcomp(char *s1, char *s2);
-uint64_t			get_time(void);
 void				ft_putstrfd(char *str, int fd);
 int					ft_atoi(char *str);
 

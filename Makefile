@@ -6,7 +6,7 @@
 #    By: francisberger <francisberger@student.42    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/01/07 17:41:37 by fberger           #+#    #+#              #
-#    Updated: 2020/06/16 15:59:47 by francisberg      ###   ########.fr        #
+#    Updated: 2020/06/18 16:02:39 by francisberg      ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,9 @@ EXEC_1		=	philo_one/philo_one
 SRCS_2		=	philo_two/actions.c \
 				philo_two/init.c \
 				philo_two/main.c \
-				philo_two/utils.c
+				philo_two/logs.c \
+				philo_two/utils.c \
+				philo_two/end.c
 OBJS_2		= 	$(SRCS_2:.c=.o)
 EXEC_2		=	philo_two/philo_two
 
