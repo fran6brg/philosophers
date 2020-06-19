@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 20:39:27 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 00:57:41 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 ** Attention cette fonction est + complexe qu'elle en a l'air
 **
-** Pour rappel dans l'initphilos() on a lock le mutex philomutexeatcount
+** Pour rappel dans l'set_philos() on a lock le mutex philomutexeatcount
 ** Pour rappel, un philo ne mange jamais une deuxième fois quand un autre
 ** n'a pas encore mangé
 ** Sachant cela, on delock à chaque fois que le philo X mange et
@@ -42,7 +42,7 @@ void			*handle_max_eat(void *arg)
 			if (sem_wait(g_banquet.philos[i].philosemaeatcount))
 				return ((void*)1);
 	}
-	if (printstatus(NULL, "maximum meal reached"))
+	if (print_status(NULL, "maximum meal reached"))
 		return ((void*)1);
 	if (sem_post(g_banquet.death))
 		return ((void*)1);
@@ -63,7 +63,7 @@ void			*handle_max_eat(void *arg)
 ** check si le philo meurt
 */
 
-static void		*handle_death(void *philo_uncasted)
+void		*handle_death(void *philo_uncasted)
 {
 	t_philo		*philo;
 
@@ -74,7 +74,7 @@ static void		*handle_death(void *philo_uncasted)
 			return ((void*)1);
 		if (philo->remainingtime < chrono())
 		{
-			printstatus(philo, "died");
+			print_status(philo, "died");
 			if (sem_post(philo->philosema))
 				return ((void*)1);
 			if (sem_post(g_banquet.death))
@@ -97,7 +97,7 @@ static void		*handle_death(void *philo_uncasted)
 ** 	- Si oui le philo mange, libère les 2 fourchettes, dors puis pense
 */
 
-static int		philo_life(void *philo_uncasted)
+int		philo_life(void *philo_uncasted)
 {
 	t_philo		*philo;
 	pthread_t	subthread;
@@ -109,36 +109,36 @@ static int		philo_life(void *philo_uncasted)
 	philo->last_meal = chrono();
 	philo->remainingtime = philo->last_meal + g_banquet.time_to_die;
 	if (pthread_create(&subthread, NULL, &handle_death, philo))
-		return (1);
+		return (RET_ERROR);
 	pthread_detach(subthread);
 	while (42)
 	{
 		if (eat(philo))
-			return (1);
-		if (sleep_unlock2forks(philo))
-			return (1);
+			return (RET_ERROR);
+		if (sleep_think(philo))
+			return (RET_ERROR);
 	}
-	return (0);
+	return (RET_SUCCESS);
 }
 
-static int		start(void)
+int		start_banquet(void)
 {
 	int			i;
 
 	i = -1;
-	g_banquet.timer = chrono();
+	g_banquet.start_time = chrono();
 	while (++i < g_banquet.nb_philos)
 	{
-		g_banquet.philos[i].philopid = fork();
-		if (g_banquet.philos[i].philopid < 0)
-			return (1);
-		else if (g_banquet.philos[i].philopid == 0)
+		g_banquet.philos[i].pid = fork();
+		if (g_banquet.philos[i].pid < 0)
+			return (RET_ERROR);
+		else if (g_banquet.philos[i].pid == 0)
 		{
 			philo_life(&g_banquet.philos[i]);
 			exit(0);
 		}
 	}
-	return (0);
+	return (RET_SUCCESS);
 }
 
 /*
@@ -148,7 +148,7 @@ static int		start(void)
 ** (donc accessible depuis tous les thread et processus)
 ** suivant : philos[i].philosemaeatcount
 **
-** Ensuite on start() qui fork() pour chaque philo du quel on call philo_life()
+** Ensuite on start_banquet() qui fork() pour chaque philo du quel on call philo_life()
 ** dans laquelle on essaie en loop infinie de manger etc ...
 **
 ** Usefull commands : pkill -f <match processus name>
@@ -159,26 +159,15 @@ int				main(int ac, char **av)
 	int i;
 
 	i = 0;
-	if (ac < 5 || ac > 6)
-	{
-		putstrfd("Error: wrong number of arguments\n", 2);
-		return (1);
-	}
+	if ((ac < 5 || ac > 6))
+		return (ft_printerror("Wrong number of arguments\n", 0));
 	if (parse_banquet_config(ac, av))
-	{
-		clear();
-		putstrfd("Error: initialization\n", 2);
-		return (1);
-	}
-	if (start() || threadmax_eat())
-	{
-		clear();
-		putstrfd("Error: core function\n", 2);
-		return (1);
-	}
+		return (ft_printerror("Argument out of range\n", 1));
+	if (start_banquet() || threadmax_eat())
+		return (ft_printerror("Thread error\n", 1));
 	sem_wait(g_banquet.death);
 	while (i < g_banquet.nb_philos)
-		kill(g_banquet.philos[i++].philopid, SIGKILL);
-	clear();
-	return (0);
+		kill(g_banquet.philos[i++].pid, SIGKILL);
+	ft_clean();
+	return (RET_SUCCESS);
 }

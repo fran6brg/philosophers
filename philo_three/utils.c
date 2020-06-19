@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:14 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/13 16:41:15 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 00:57:41 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void				putuint64_t(int fd, uint64_t nbr)
 **	tv_sec = seconds since Jan. 1, 1970
 **	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
 **  Avec #include <inttypes.h>
-** 	printf("Timer : %" PRIu64 "\n", chrono());
+** 	printf("start_time : %" PRIu64 "\n", chrono());
 */
 
 uint64_t			chrono(void)
