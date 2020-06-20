@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/20 00:14:01 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 17:39:15 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 18:06:38 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void            add_status_to_log(char *log, int *i, const int status)
             add_str_to_log(log, i, "is sleeping\n");
         else if (status == IS_THINKING)
             add_str_to_log(log, i, "is thinking\n");
+        else if (status == MAX_EAT_REACHED)
+            add_str_to_log(log, i, "max eat reached\n");
         else if (status == DIED)
             add_str_to_log(log, i, "died\n");
 }
@@ -84,22 +86,24 @@ int				print_status(t_philo *philo, const int status)
 	char	    log[50] = {0};
     int         i;
 
-	if (sem_wait(g_banquet.write))
-		return (RET_ERROR);
 	if (sem_wait(g_banquet.process_death))
 		return (RET_ERROR);		
 	i = 0;
 	add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
 	add_str_to_log(log, &i, "\t");
 	if (status != MAX_EAT_REACHED)
+	{
 		add_nb_to_log(log, &i, philo->pos + 1);
-	add_str_to_log(log, &i, " ");
+		add_str_to_log(log, &i, " ");
+	}
 	add_status_to_log(log, &i, status);
+	if (sem_wait(g_banquet.write))
+		return (RET_ERROR);
     write(1, log, i);
+	if (sem_post(g_banquet.write))
+		return (RET_ERROR);
 	if (status != MAX_EAT_REACHED && status != DIED)
 		if (sem_post(g_banquet.process_death))
 			return (RET_ERROR);
-	if (sem_post(g_banquet.write))
-		return (RET_ERROR);
 	return (RET_SUCCESS);
 }

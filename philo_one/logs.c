@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/15 14:05:32 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 15:09:03 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 18:04:46 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void            add_status_to_log(char *log, int *i, const int status)
             add_str_to_log(log, i, "is sleeping\n");
         else if (status == IS_THINKING)
             add_str_to_log(log, i, "is thinking\n");
+        else if (status == MAX_EAT_REACHED)
+            add_str_to_log(log, i, "max eat reached\n");
         else if (status == DIED)
             add_str_to_log(log, i, "died\n");
 }
@@ -81,7 +83,7 @@ void			print_status(t_philo *philo, const int status)
 		if (status == MAX_EAT_REACHED)
 		{
 			off = 1;
-            add_str_to_log(log, &i, "max eat reached\n");
+            add_status_to_log(log, &i, status);
 			pthread_mutex_lock(&g_banquet.write);
             write(1, log, i);
 			pthread_mutex_unlock(&g_banquet.write);

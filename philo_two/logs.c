@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/16 20:07:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 15:08:16 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 18:05:15 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void            add_status_to_log(char *log, int *i, const int status)
             add_str_to_log(log, i, "is sleeping\n");
         else if (status == IS_THINKING)
             add_str_to_log(log, i, "is thinking\n");
+        else if (status == MAX_EAT_REACHED)
+            add_str_to_log(log, i, "max eat reached\n");
         else if (status == DIED)
             add_str_to_log(log, i, "died\n");
 }
@@ -81,7 +83,7 @@ int				print_status(t_philo *philo, const int status)
 		if (status == MAX_EAT_REACHED)
 		{
 			off = 1;
-            add_str_to_log(log, &i, "max eat reached\n");
+            add_status_to_log(log, &i, status);
 			if (sem_wait(g_banquet.write))
 				return (RET_ERROR);
             write(1, log, i);
