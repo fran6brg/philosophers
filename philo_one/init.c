@@ -6,18 +6,13 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:17 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/16 19:37:28 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:26:07 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*
-** Le table est circulaire donc le dernier philosophe est voisin du premier
-** D'où le ternaire (i + 1 != number) ? i + 1 : 0
-*/
-
-int				set_philos()
+int				set_philos(void)
 {
 	int			i;
 
@@ -36,12 +31,6 @@ int				set_philos()
 	}
 	return (RET_SUCCESS);
 }
-
-/*
-** On lock stop_banquet car c'est la condition de sortie du main
-** Le pthread_mutex_lock(stop_banquet) ici permet de wait jusqu'à une mort
-** dans le 2nd call de pthread_mutex_lock(stop_banquet) du main
-*/
 
 int				set_mutex(void)
 {

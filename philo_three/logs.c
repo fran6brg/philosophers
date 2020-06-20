@@ -6,19 +6,11 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/20 00:14:01 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 18:06:38 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:34:14 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-/*
-**	man gettimeofday
-**	tv_sec = seconds since Jan. 1, 1970
-**	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
-**  Avec #include <inttypes.h>
-** 	printf("start_time : %" PRIu64 "\n", get_time());
-*/
 
 uint64_t			get_time(void)
 {
@@ -68,18 +60,6 @@ void            add_status_to_log(char *log, int *i, const int status)
         else if (status == DIED)
             add_str_to_log(log, i, "died\n");
 }
-
-
-/*
-** Dans philo_three, print_status() fonctionne un peu différement :
-** on utilise un sema binaire (donc mutex) en plus pour gérer l'affichage
-** correctement entre les processus
-** S'il y a un mort ou que l'on atteint le maximum de repas, on n'execute pas
-** sem_post(context.process_death) donc le semaphore (initialisé à 1), reste
-** à 0 après ce qui bloque l'écriture
-** Avant le static qui permettait de faire ça n'aurait pas fonctionné pour
-** des multiples processus (contrairement à juste du multithread)
-*/
 
 int				print_status(t_philo *philo, const int status)
 {

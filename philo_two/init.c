@@ -6,20 +6,13 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:14 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/19 23:36:28 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:26:39 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*
-** Retourne un string équivalent à name+id pour différencier
-** les N sémaphores
-** L'int eat vaut 0 si on doit retourner un name philo-id
-** ou alors 1 si philo-eat-id
-*/
-
-void		semanames(char *name, int id, int eat)
+void			semanames(char *name, int id, int eat)
 {
 	int			i;
 	const char	name1[6] = "philo-";
@@ -93,21 +86,6 @@ int				check_config(void)
 		return (RET_ERROR);
 	return (RET_SUCCESS);
 }
-
-/*
-** Named semaphores content cannot be printed !
-**
-** To show context
-** printf("NAME PHILO %d : %s\n", i, name);
-** printf("NAME PHILO %d : %s\n", i, name);
-** int i = 0;
-** while (i < context.philosophers)
-** {
-** printf("philo %d pos : %d\n", i, context.philos[i].pos);
-** printf("philo %d meal_count : %d\n", i, context.philos[i].meal_count);
-** i++;
-** }
-*/
 
 int				parse_banquet_config(int ac, char **av)
 {

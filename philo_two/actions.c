@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:36 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 21:59:05 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:17:24 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,7 @@ void		ft_loop_usleep(unsigned int n)
 	}
 }
 
-/*
-** On lock 2 fourchettes pour pouvoir manger, si indisponible on attend
-** Sachant que les fourchettes sont au centre et non entre chaque philosophe
-*/
-
-/*
-** On lock le mutex appartenant au philosophe concerné
-** usleep * 1000 pour les milisecondes
-*/
-
-int				eat_sleep_think(t_philo *philo)
+int			eat_sleep_think(t_philo *philo)
 {
 	if (sem_wait(g_banquet.ask_forks)
 	|| sem_wait(g_banquet.forks)

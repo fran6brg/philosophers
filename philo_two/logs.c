@@ -6,40 +6,32 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/16 20:07:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 18:05:15 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:33:29 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*
-**	man gettimeofday
-**	tv_sec = seconds since Jan. 1, 1970
-**	tv_usec = microseconds left (need to divide by 1000 for miliseconds)
-**  Avec #include <inttypes.h>
-** 	printf("start_time : %" PRIu64 "\n", get_time());
-*/
-
 uint64_t			get_time(void)
 {
-	struct timeval	tv;
+	struct timeval tv;
 
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000));
 }
 
-void	add_str_to_log(char *log, int *i, char *str)
+void				add_str_to_log(char *log, int *i, char *str)
 {
-	int j;
+	int				j;
 
 	j = -1;
 	while (str[++j])
 		log[(*i)++] = str[j];
 }
 
-void			add_nb_to_log(char *log, int *index, uint64_t n)
+void				add_nb_to_log(char *log, int *index, uint64_t n)
 {
-	uint64_t len;
+	uint64_t		len;
 
 	len = 1;
 	while (n / len >= 10)
@@ -51,54 +43,54 @@ void			add_nb_to_log(char *log, int *index, uint64_t n)
 	}
 }
 
-void            add_status_to_log(char *log, int *i, const int status)
+void				add_status_to_log(char *log, int *i, const int status)
 {
-        if (status == HAS_TAKEN_A_FORK)
-            add_str_to_log(log, i, "has taken a fork\n");
-        else if (status == HAS_LEFT_ITS_FORKS)
-            add_str_to_log(log, i, "has left its forks\n");
-        else if (status == IS_EATING)
-            add_str_to_log(log, i, "is eating\n");
-        else if (status == IS_SLEEPING)
-            add_str_to_log(log, i, "is sleeping\n");
-        else if (status == IS_THINKING)
-            add_str_to_log(log, i, "is thinking\n");
-        else if (status == MAX_EAT_REACHED)
-            add_str_to_log(log, i, "max eat reached\n");
-        else if (status == DIED)
-            add_str_to_log(log, i, "died\n");
+	if (status == HAS_TAKEN_A_FORK)
+		add_str_to_log(log, i, "has taken a fork\n");
+	else if (status == HAS_LEFT_ITS_FORKS)
+		add_str_to_log(log, i, "has left its forks\n");
+	else if (status == IS_EATING)
+		add_str_to_log(log, i, "is eating\n");
+	else if (status == IS_SLEEPING)
+		add_str_to_log(log, i, "is sleeping\n");
+	else if (status == IS_THINKING)
+		add_str_to_log(log, i, "is thinking\n");
+	else if (status == MAX_EAT_REACHED)
+		add_str_to_log(log, i, "max eat reached\n");
+	else if (status == DIED)
+		add_str_to_log(log, i, "died\n");
 }
 
-int				print_status(t_philo *philo, const int status)
+int					print_status(t_philo *philo, const int status)
 {
-	char	    log[50] = {0};
-    int         i;
-	static int	off;
+	char			log[50] = {0};
+	int				i;
+	static int		off = 0;
 
 	if (off == 0)
 	{
-    	i = 0;
+		i = 0;
 		add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
-        add_str_to_log(log, &i, "\t");
+		add_str_to_log(log, &i, "\t");
 		if (status == MAX_EAT_REACHED)
 		{
 			off = 1;
-            add_status_to_log(log, &i, status);
+			add_status_to_log(log, &i, status);
 			if (sem_wait(g_banquet.write))
 				return (RET_ERROR);
-            write(1, log, i);
-			return (sem_post(g_banquet.write) == 0 ? 0 : 1);
+			write(1, log, i);
+			return (sem_post(g_banquet.write) == 0 ? RET_SUCCESS : RET_ERROR);
 		}
 		add_nb_to_log(log, &i, philo->pos + 1);
-        add_str_to_log(log, &i, " ");
-        add_status_to_log(log, &i, status);
-        if (status == DIED)
-            off = 1;
+		add_str_to_log(log, &i, " ");
+		add_status_to_log(log, &i, status);
+		if (status == DIED)
+			off = 1;
 		if (sem_wait(g_banquet.write))
 			return (RET_ERROR);
-        write(1, log, i);
+		write(1, log, i);
 	}
 	if (sem_post(g_banquet.write))
 		return (RET_ERROR);
-	return (off == 1 ? 1 : 0);
+	return (off == 1 ? RET_ERROR : RET_SUCCESS);
 }

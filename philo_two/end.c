@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/16 20:07:48 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/19 23:21:31 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 00:19:03 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** ft_printerror
 */
 
-int 			ft_printerror(char *msg, int clean)
+int			ft_printerror(char *msg, int clean)
 {
 	if (clean)
 		ft_clean();
@@ -28,10 +28,10 @@ int 			ft_printerror(char *msg, int clean)
 ** ft_clean
 */
 
-int				ft_clean(void)
+int			ft_clean(void)
 {
-	int			i;
-	char		name[50];
+	int		i;
+	char	name[50];
 
 	i = 0;
 	if (g_banquet.philos)
