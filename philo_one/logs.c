@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 01:21:47 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/21 01:22:29 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:38:16 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,11 @@ void				add_status_to_log(char *log, int *i, const int status)
 
 void				print_status(t_philo *philo, const int status)
 {
-	char			log[50] = {0};
+	char			log[50];
 	int				i;
 	static int		off;
 
+	memset(log, 0, 50);
 	if (off == 0)
 	{
 		i = 0;

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/20 00:14:01 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/21 01:20:00 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:38:33 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,9 +63,10 @@ void				add_status_to_log(char *log, int *i, const int status)
 
 int					print_status(t_philo *philo, const int status)
 {
-	char			log[50] = {0};
+	char			log[50];
 	int				i;
 
+	memset(log, 0, 50);
 	if (sem_wait(g_banquet.process_death))
 		return (RET_ERROR);
 	i = 0;
