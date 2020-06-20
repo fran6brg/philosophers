@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/15 14:05:32 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 18:04:46 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 22:03:07 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,10 +92,11 @@ void			print_status(t_philo *philo, const int status)
 		add_nb_to_log(log, &i, philo->pos + 1);
         add_str_to_log(log, &i, " ");
         add_status_to_log(log, &i, status);
+		pthread_mutex_lock(&g_banquet.write);
         if (status == DIED)
             off = 1;
-		pthread_mutex_lock(&g_banquet.write);
-        write(1, log, i);
+		if (!off)
+        	write(1, log, i);
 	}
 	pthread_mutex_unlock(&g_banquet.write);
 }

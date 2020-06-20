@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 17:57:04 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 22:01:35 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,12 @@ void		*handle_max_eat(void *arg)
 	{
 		i = 0;
 		while (i < g_banquet.nb_philos)
-			if (sem_wait(g_banquet.philos[i].meat_count))
+			if (sem_wait(g_banquet.philos[i++].meat_count))
 				return ((void *)RET_ERROR);
 		nb_times_philos_have_eaten++;
 	}
-	print_status(NULL, MAX_EAT_REACHED);
+	if (print_status(NULL, MAX_EAT_REACHED))
+		return ((void *)RET_ERROR);
 	if (sem_post(g_banquet.death))
 		return ((void *)RET_ERROR);
 	return ((void *)RET_SUCCESS);
@@ -110,12 +111,8 @@ void		*philo_life(void *philo_uncasted)
 		return ((void *)RET_ERROR);
 	pthread_detach(subthread);
 	while (1)
-	{
-		if (eat(philo))
+		if (eat_sleep_think(philo))
 			return ((void *)RET_ERROR);
-		if (sleep_think(philo))
-			return ((void *)RET_ERROR);
-	}
 	return ((void *)RET_SUCCESS);
 }
 
