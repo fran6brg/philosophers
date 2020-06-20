@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:38:57 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 21:53:26 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:34:16 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@
 # include <inttypes.h>
 # include <semaphore.h>
 # include <fcntl.h>
-
 
 # define RET_SUCCESS		0
 # define RET_ERROR			1
@@ -106,7 +105,8 @@ int							eat_sleep_think(t_philo *philo);
 uint64_t					get_time(void);
 void						add_str_to_log(char *buf, int *i, char *str);
 void						add_nb_to_log(char *buf, int *index, uint64_t n);
-void						add_status_to_log(char *log, int *i, const int status);
+void						add_status_to_log(char *log, int *i,
+							const int status);
 int							print_status(t_philo *philo, const int status);
 
 /*
@@ -116,12 +116,11 @@ int							print_status(t_philo *philo, const int status);
 void						ft_putstrfd(char *str, int fd);
 int							ft_atoi(char *str);
 
-
 /*
 ** end.c
 */
 
-int 						ft_printerror(char *msg, int clean);
+int							ft_printerror(char *msg, int clean);
 int							ft_clean(void);
 
 #endif

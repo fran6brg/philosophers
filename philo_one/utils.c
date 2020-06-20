@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:34 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 17:36:23 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:27:44 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void				ft_putstrfd(char *str, int fd)
 {
 	int i;
 
-	i = -1;	
+	i = -1;
 	while (str[++i])
 		write(fd, &str[i], 1);
 }

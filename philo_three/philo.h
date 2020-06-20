@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:09 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 17:54:01 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:32:38 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <fcntl.h>
-
 
 # define RET_SUCCESS		0
 # define RET_ERROR			1
@@ -56,15 +55,6 @@ typedef struct				s_philo
 	sem_t					*philosema;
 	sem_t					*philo_eat_count;
 }							t_philo;
-
-/*
-** Les variables globales sont entièrement dupliquées quand on fork()
-** mais les sémaphores contenus dedans semblent être partagés
-** The semaphore can be shared across threads or processes
-** More infos here :
-** https://stackoverflow.com/questions/6847973/do-forked-child-
-** processes-use-the-same-semaphore
-*/
 
 typedef struct				s_banquet
 {
@@ -119,7 +109,8 @@ int							eat_sleep_think(t_philo *philo);
 uint64_t					get_time(void);
 void						add_str_to_log(char *log, int *i, char *str);
 void						add_nb_to_log(char *log, int *index, uint64_t n);
-void        			    add_status_to_log(char *log, int *i, const int status);
+void						add_status_to_log(char *log, int *i,
+							const int status);
 int							print_status(t_philo *philo, const int status);
 
 /*
@@ -133,7 +124,7 @@ int							ft_atoi(char *str);
 ** end.c
 */
 
-int 						ft_printerror(char *msg, int clean);
+int							ft_printerror(char *msg, int clean);
 int							ft_clean(void);
 
 #endif

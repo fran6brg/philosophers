@@ -6,27 +6,11 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 17:57:04 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:27:04 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-/*
-** Attention cette fonction est + complexe qu'elle en a l'air
-**
-** Pour rappel dans l'set_philos() on a lock le mutex philomutexeatcount
-** Pour rappel, un philo ne mange jamais une deuxième fois quand un autre
-** n'a pas encore mangé
-** Sachant cela, on delock à chaque fois que le philo X mange et
-** on le relock ici en incrémentant i
-** On itère de manière croissant sur les philos donc si le philo 5 mange avant
-** le 2, pas de problème car le mutex du 5 sera delock instantanément
-** On fait cela "context.max_eat" fois
-**
-** void *arg ne sert à rien, c'est juste qu'on est forcé de mettre un argument
-** par respect pour le prototype
-*/
 
 void			*handle_max_eat(void *arg)
 {
@@ -49,21 +33,7 @@ void			*handle_max_eat(void *arg)
 	return ((void*)RET_SUCCESS);
 }
 
-/*
-** La fonction handle_death() surveille qu'aucun philosophe ne meure
-** Un philosophe meurt s'il n'est pas entrain de manger et que son temps de
-** survie depuis le dernier est depassé
-** Si c'est le cas, on unlock mutexdeath qui fait que le main se termine
-** car autrement, ca ralentirai largement les actions
-**
-** On usleep(1000) (indispensable) pour pas toujours avoir le
-** philo->philomutex de locké
-** Pas besoin de savoir si le philo est en train de manger car de toute facon
-** le mutex global est lock donc s'il mange, le thread handle_death pourra pas
-** check si le philo meurt
-*/
-
-void		*handle_death(void *philo_voided)
+void			*handle_death(void *philo_voided)
 {
 	t_philo		*philo;
 
@@ -88,16 +58,7 @@ void		*handle_death(void *philo_voided)
 	return ((void*)RET_SUCCESS);
 }
 
-/*
-** no_eat_limit() intervient quand il n'y a pas de limite de repas
-** philo->last_meal = get_time();
-** Cette ligne sert juste d'initialisation avant le premier repas d'un philo
-** On crée un thread  moniteur (detaché) du thread appartenant au philo X
-** On essaie dans le while (1) de prendre les 2 fourchettes voisines
-** 	- Si oui le philo mange, libère les 2 fourchettes, dors puis pense
-*/
-
-int		philo_life(void *philo_voided)
+int				philo_life(void *philo_voided)
 {
 	t_philo		*philo;
 	pthread_t	death;
@@ -115,7 +76,7 @@ int		philo_life(void *philo_voided)
 	return (RET_SUCCESS);
 }
 
-int		start_banquet(void)
+int				start_banquet(void)
 {
 	int			i;
 	pthread_t	max;
@@ -142,22 +103,9 @@ int		start_banquet(void)
 	return (RET_SUCCESS);
 }
 
-/*
-** Explication globale philo_three
-** On execute threadmax_eat() qui lance un thread en loop infinie pour gerer
-** le eat maximum qui est définit par les semaphores
-** (donc accessible depuis tous les thread et processus)
-** suivant : philos[i].philo_eat_count
-**
-** Ensuite on start_banquet() qui fork() pour chaque philo du quel on call philo_life()
-** dans laquelle on essaie en loop infinie de manger etc ...
-**
-** Usefull commands : pkill -f <match processus name>
-*/
-
 int				main(int ac, char **av)
 {
-	int i;
+	int			i;
 
 	i = 0;
 	if ((ac < 5 || ac > 6))

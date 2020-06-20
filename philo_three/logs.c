@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/20 00:14:01 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/21 00:34:14 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:20:00 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ uint64_t			get_time(void)
 	return ((tv.tv_sec) * (uint64_t)1000 + (tv.tv_usec / 1000));
 }
 
-void	add_str_to_log(char *log, int *i, char *str)
+void				add_str_to_log(char *log, int *i, char *str)
 {
 	int j;
 
@@ -29,9 +29,9 @@ void	add_str_to_log(char *log, int *i, char *str)
 		log[(*i)++] = str[j];
 }
 
-void			add_nb_to_log(char *log, int *index, uint64_t n)
+void				add_nb_to_log(char *log, int *index, uint64_t n)
 {
-	uint64_t len;
+	uint64_t		len;
 
 	len = 1;
 	while (n / len >= 10)
@@ -43,31 +43,31 @@ void			add_nb_to_log(char *log, int *index, uint64_t n)
 	}
 }
 
-void            add_status_to_log(char *log, int *i, const int status)
+void				add_status_to_log(char *log, int *i, const int status)
 {
-        if (status == HAS_TAKEN_A_FORK)
-            add_str_to_log(log, i, "has taken a fork\n");
-        else if (status == HAS_LEFT_ITS_FORKS)
-            add_str_to_log(log, i, "has left its forks\n");
-        else if (status == IS_EATING)
-            add_str_to_log(log, i, "is eating\n");
-        else if (status == IS_SLEEPING)
-            add_str_to_log(log, i, "is sleeping\n");
-        else if (status == IS_THINKING)
-            add_str_to_log(log, i, "is thinking\n");
-        else if (status == MAX_EAT_REACHED)
-            add_str_to_log(log, i, "max eat reached\n");
-        else if (status == DIED)
-            add_str_to_log(log, i, "died\n");
+	if (status == HAS_TAKEN_A_FORK)
+		add_str_to_log(log, i, "has taken a fork\n");
+	else if (status == HAS_LEFT_ITS_FORKS)
+		add_str_to_log(log, i, "has left its forks\n");
+	else if (status == IS_EATING)
+		add_str_to_log(log, i, "is eating\n");
+	else if (status == IS_SLEEPING)
+		add_str_to_log(log, i, "is sleeping\n");
+	else if (status == IS_THINKING)
+		add_str_to_log(log, i, "is thinking\n");
+	else if (status == MAX_EAT_REACHED)
+		add_str_to_log(log, i, "max eat reached\n");
+	else if (status == DIED)
+		add_str_to_log(log, i, "died\n");
 }
 
-int				print_status(t_philo *philo, const int status)
+int					print_status(t_philo *philo, const int status)
 {
-	char	    log[50] = {0};
-    int         i;
+	char			log[50] = {0};
+	int				i;
 
 	if (sem_wait(g_banquet.process_death))
-		return (RET_ERROR);		
+		return (RET_ERROR);
 	i = 0;
 	add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
 	add_str_to_log(log, &i, "\t");
@@ -79,7 +79,7 @@ int				print_status(t_philo *philo, const int status)
 	add_status_to_log(log, &i, status);
 	if (sem_wait(g_banquet.write))
 		return (RET_ERROR);
-    write(1, log, i);
+	write(1, log, i);
 	if (sem_post(g_banquet.write))
 		return (RET_ERROR);
 	if (status != MAX_EAT_REACHED && status != DIED)
