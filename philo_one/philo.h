@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:29 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 16:03:57 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:36:27 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,6 @@ void				print_status(t_philo *philo, const int status);
 ** utils.c
 */
 
-int					ft_strcomp(char *s1, char *s2);
 void				ft_putstrfd(char *str, int fd);
 int					ft_atoi(char *str);
 

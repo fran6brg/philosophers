@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:14 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 17:01:39 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/19 23:36:28 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,16 @@
 void		semanames(char *name, int id, int eat)
 {
 	int			i;
-	const char	basename1[6] = "philo-";
-	const char	basename2[10] = "philo-eat-";
+	const char	name1[6] = "philo-";
+	const char	name2[10] = "philo-eat-";
 
 	i = -1;
 	if (eat)
 		while (++i < 10)
-			name[i] = basename2[i];
+			name[i] = name2[i];
 	else
 		while (++i < 6)
-			name[i] = basename1[i];
+			name[i] = name1[i];
 	while (id)
 	{
 		name[i++] = (id % 10) + '0';
@@ -40,7 +40,7 @@ void		semanames(char *name, int id, int eat)
 	name[i] = '\0';
 }
 
-int				initphilos(void)
+int				set_philos(void)
 {
 	int			i;
 	char		name[50];
@@ -66,7 +66,7 @@ int				initphilos(void)
 	return (RET_SUCCESS);
 }
 
-int				initsemas(int philonum)
+int				set_semas(int philonum)
 {
 	if ((g_banquet.forks =
 		sem_open(FORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
@@ -79,6 +79,17 @@ int				initsemas(int philonum)
 		return (RET_ERROR);
 	if ((g_banquet.death =
 		sem_open(DEATH, O_CREAT, 0666, 0)) == SEM_FAILED)
+		return (RET_ERROR);
+	return (RET_SUCCESS);
+}
+
+int				check_config(void)
+{
+	if (g_banquet.nb_philos <= 0
+		|| g_banquet.time_to_die <= 0
+		|| g_banquet.time_to_eat <= 0
+		|| g_banquet.time_to_sleep <= 0
+		|| g_banquet.max_eat < 0)
 		return (RET_ERROR);
 	return (RET_SUCCESS);
 }
@@ -107,17 +118,15 @@ int				parse_banquet_config(int ac, char **av)
 	g_banquet.time_to_eat = ft_atoi(av[3]);
 	g_banquet.time_to_sleep = ft_atoi(av[4]);
 	g_banquet.max_eat = (ac == 6) ? ft_atoi(av[5]) : 0;
-	if (g_banquet.nb_philos < 2 || g_banquet.nb_philos > 200 ||
-		g_banquet.time_to_die < 60 || g_banquet.time_to_eat < 60 ||
-		g_banquet.time_to_sleep < 60 || g_banquet.max_eat < 0)
+	if (check_config())
 		return (RET_ERROR);
 	g_banquet.philos = NULL;
 	g_banquet.globaleatcoutner = 0;
 	if (!(g_banquet.philos = malloc(sizeof(t_philo) * g_banquet.nb_philos)))
 		return (RET_ERROR);
-	if (initphilos())
+	if (set_philos())
 		return (RET_ERROR);
-	if (initsemas(g_banquet.nb_philos))
+	if (set_semas(g_banquet.nb_philos))
 		return (RET_ERROR);
 	return (RET_SUCCESS);
 }

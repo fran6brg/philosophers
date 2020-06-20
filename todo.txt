@@ -1,0 +1,4 @@
+remove strcompare qui sert à r
+
+resserer la zone critique autour du ft_strputfd
+vu qu'on a bufferiser l'output -> sacrée opti

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 00:57:41 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:57:04 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,14 @@ void			*handle_max_eat(void *arg)
 	{
 		i = -1;
 		while (++i < g_banquet.nb_philos)
-			if (sem_wait(g_banquet.philos[i].philosemaeatcount))
-				return ((void*)1);
+			if (sem_wait(g_banquet.philos[i].philo_eat_count))
+				return ((void *)RET_ERROR);
 	}
-	if (print_status(NULL, "maximum meal reached"))
-		return ((void*)1);
+	if (print_status(NULL, MAX_EAT_REACHED))
+		return ((void *)RET_ERROR);
 	if (sem_post(g_banquet.death))
-		return ((void*)1);
-	return ((void*)0);
+		return ((void *)RET_ERROR);
+	return ((void*)RET_SUCCESS);
 }
 
 /*
@@ -63,70 +63,71 @@ void			*handle_max_eat(void *arg)
 ** check si le philo meurt
 */
 
-void		*handle_death(void *philo_uncasted)
+void		*handle_death(void *philo_voided)
 {
 	t_philo		*philo;
 
-	philo = (t_philo*)philo_uncasted;
-	while (42)
+	philo = (t_philo*)philo_voided;
+	while (1)
 	{
 		if (sem_wait(philo->philosema))
-			return ((void*)1);
-		if (philo->remainingtime < chrono())
+			return ((void*)RET_ERROR);
+		if (philo->remainingtime < get_time())
 		{
-			print_status(philo, "died");
+			print_status(philo, DIED);
 			if (sem_post(philo->philosema))
-				return ((void*)1);
+				return ((void*)RET_ERROR);
 			if (sem_post(g_banquet.death))
-				return ((void*)1);
-			return ((void*)0);
+				return ((void*)RET_ERROR);
+			return ((void*)RET_SUCCESS);
 		}
 		if (sem_post(philo->philosema))
-			return ((void*)1);
+			return ((void*)RET_ERROR);
 		usleep(1000);
 	}
-	return ((void*)0);
+	return ((void*)RET_SUCCESS);
 }
 
 /*
 ** no_eat_limit() intervient quand il n'y a pas de limite de repas
-** philo->last_meal = chrono();
+** philo->last_meal = get_time();
 ** Cette ligne sert juste d'initialisation avant le premier repas d'un philo
 ** On crée un thread  moniteur (detaché) du thread appartenant au philo X
 ** On essaie dans le while (1) de prendre les 2 fourchettes voisines
 ** 	- Si oui le philo mange, libère les 2 fourchettes, dors puis pense
 */
 
-int		philo_life(void *philo_uncasted)
+int		philo_life(void *philo_voided)
 {
 	t_philo		*philo;
-	pthread_t	subthread;
-	int			usecwait;
+	pthread_t	death;
 
-	philo = (t_philo*)philo_uncasted;
-	usecwait = (philo->pos - g_banquet.nb_philos) * -100;
-	usleep(usecwait);
-	philo->last_meal = chrono();
+	philo = (t_philo*)philo_voided;
+	usleep(100);
+	philo->last_meal = get_time();
 	philo->remainingtime = philo->last_meal + g_banquet.time_to_die;
-	if (pthread_create(&subthread, NULL, &handle_death, philo))
+	if (pthread_create(&death, NULL, &handle_death, philo))
 		return (RET_ERROR);
-	pthread_detach(subthread);
-	while (42)
-	{
-		if (eat(philo))
+	pthread_detach(death);
+	while (1)
+		if (eat_sleep_think(philo))
 			return (RET_ERROR);
-		if (sleep_think(philo))
-			return (RET_ERROR);
-	}
 	return (RET_SUCCESS);
 }
 
 int		start_banquet(void)
 {
 	int			i;
+	pthread_t	max;
 
 	i = -1;
-	g_banquet.start_time = chrono();
+	g_banquet.start_time = get_time();
+	if (g_banquet.max_eat)
+	{
+		if (pthread_create(&max, NULL, &handle_max_eat, NULL))
+			return (RET_ERROR);
+		pthread_detach(max);
+	}
 	while (++i < g_banquet.nb_philos)
 	{
 		g_banquet.philos[i].pid = fork();
@@ -146,7 +147,7 @@ int		start_banquet(void)
 ** On execute threadmax_eat() qui lance un thread en loop infinie pour gerer
 ** le eat maximum qui est définit par les semaphores
 ** (donc accessible depuis tous les thread et processus)
-** suivant : philos[i].philosemaeatcount
+** suivant : philos[i].philo_eat_count
 **
 ** Ensuite on start_banquet() qui fork() pour chaque philo du quel on call philo_life()
 ** dans laquelle on essaie en loop infinie de manger etc ...
@@ -163,7 +164,7 @@ int				main(int ac, char **av)
 		return (ft_printerror("Wrong number of arguments\n", 0));
 	if (parse_banquet_config(ac, av))
 		return (ft_printerror("Argument out of range\n", 1));
-	if (start_banquet() || threadmax_eat())
+	if (start_banquet())
 		return (ft_printerror("Thread error\n", 1));
 	sem_wait(g_banquet.death);
 	while (i < g_banquet.nb_philos)

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/15 14:05:32 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 16:04:15 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 15:09:03 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,7 @@ void            add_status_to_log(char *log, int *i, const int status)
         else if (status == IS_THINKING)
             add_str_to_log(log, i, "is thinking\n");
         else if (status == DIED)
-        {
             add_str_to_log(log, i, "died\n");
-        }
 }
 
 void			print_status(t_philo *philo, const int status)
@@ -75,7 +73,6 @@ void			print_status(t_philo *philo, const int status)
     int         i;
 	static int	off;
 
-	pthread_mutex_lock(&g_banquet.write);
 	if (off == 0)
 	{
     	i = 0;
@@ -85,6 +82,7 @@ void			print_status(t_philo *philo, const int status)
 		{
 			off = 1;
             add_str_to_log(log, &i, "max eat reached\n");
+			pthread_mutex_lock(&g_banquet.write);
             write(1, log, i);
 			pthread_mutex_unlock(&g_banquet.write);
 			return ;
@@ -94,6 +92,7 @@ void			print_status(t_philo *philo, const int status)
         add_status_to_log(log, &i, status);
         if (status == DIED)
             off = 1;
+		pthread_mutex_lock(&g_banquet.write);
         write(1, log, i);
 	}
 	pthread_mutex_unlock(&g_banquet.write);

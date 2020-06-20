@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/16 20:07:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 16:09:15 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 15:08:16 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,7 @@ void            add_status_to_log(char *log, int *i, const int status)
         else if (status == IS_THINKING)
             add_str_to_log(log, i, "is thinking\n");
         else if (status == DIED)
-        {
             add_str_to_log(log, i, "died\n");
-        }
 }
 
 int				print_status(t_philo *philo, const int status)
@@ -75,8 +73,6 @@ int				print_status(t_philo *philo, const int status)
     int         i;
 	static int	off;
 
-	if (sem_wait(g_banquet.write))
-		return (RET_ERROR);
 	if (off == 0)
 	{
     	i = 0;
@@ -86,6 +82,8 @@ int				print_status(t_philo *philo, const int status)
 		{
 			off = 1;
             add_str_to_log(log, &i, "max eat reached\n");
+			if (sem_wait(g_banquet.write))
+				return (RET_ERROR);
             write(1, log, i);
 			return (sem_post(g_banquet.write) == 0 ? 0 : 1);
 		}
@@ -94,6 +92,8 @@ int				print_status(t_philo *philo, const int status)
         add_status_to_log(log, &i, status);
         if (status == DIED)
             off = 1;
+		if (sem_wait(g_banquet.write))
+			return (RET_ERROR);
         write(1, log, i);
 	}
 	if (sem_post(g_banquet.write))

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:38:57 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 17:04:38 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:36:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ typedef struct				s_philo
 	sem_t					*meat_count;
 }							t_philo;
 
-typedef struct				s_context
+typedef struct				s_banquet
 {
 	int						nb_philos;
 	int						globaleatcoutner;
@@ -68,9 +68,9 @@ typedef struct				s_context
 	sem_t					*ask_forks;
 	sem_t					*death;
 	sem_t					*write;
-}							t_context;
+}							t_banquet;
 
-t_context					g_banquet;
+t_banquet					g_banquet;
 
 /*
 ** main.c
@@ -87,8 +87,9 @@ int							main(int ac, char **av);
 */
 
 void						semanames(char *name, int id, int eat);
-int							initphilos(void);
-int							initsemas(int philonum);
+int							set_philos(void);
+int							set_semas(int philonum);
+int							check_config(void);
 int							parse_banquet_config(int ac, char **av);
 
 /*
@@ -103,8 +104,9 @@ int							eat(t_philo *philo);
 ** logs.c
 */
 
-void						add_nb_to_log(char *buf, int *index, uint64_t n);
+uint64_t					get_time(void);
 void						add_str_to_log(char *buf, int *i, char *str);
+void						add_nb_to_log(char *buf, int *index, uint64_t n);
 void						add_status_to_log(char *log, int *i, const int status);
 int							print_status(t_philo *philo, const int status);
 
@@ -112,25 +114,15 @@ int							print_status(t_philo *philo, const int status);
 ** utils.c
 */
 
+void						ft_putstrfd(char *str, int fd);
+int							ft_atoi(char *str);
+
+
 /*
 ** end.c
 */
 
 int 						ft_printerror(char *msg, int clean);
 int							ft_clean(void);
-
-/*
-** ----------
-*/
-
-void						ft_putstrfd(char *str, int fd);
-int							ft_atoi(char *str);
-void						putuint64_t(int fd, uint64_t nbr);
-uint64_t					get_time(void);
-int							strcompare(char *s1, char *s2);
-int							printstatus(t_philo *philo, char *str);
-int							lock2forks(t_philo *philo);
-int							sleep_think(t_philo *philo);
-int							eat(t_philo *philo);
 
 #endif

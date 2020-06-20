@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:41:09 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 00:57:41 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:54:01 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,10 @@
 # define PHI_INIT			0
 # define EAT_INIT			1
 
-# define SEMAFORKS			"/SEMAFORKS"
+# define FORKS				"/FORKS"
 # define WRITE				"/WRITE"
 # define DEATH				"/DEATH"
-# define SEMAPROCESSDEATH	"/SEMAPROCESSDEATH"
+# define PROCESSDEATH		"/PROCESSDEATH"
 # define ASKTAKEFORKS		"/ASKTAKEFORKS"
 
 typedef struct				s_philo
@@ -54,7 +54,7 @@ typedef struct				s_philo
 	uint64_t				remainingtime;
 	pid_t					pid;
 	sem_t					*philosema;
-	sem_t					*philosemaeatcount;
+	sem_t					*philo_eat_count;
 }							t_philo;
 
 /*
@@ -66,69 +66,68 @@ typedef struct				s_philo
 ** processes-use-the-same-semaphore
 */
 
-typedef struct		s_banquet
+typedef struct				s_banquet
 {
-	int				nb_philos;
-	int				globaleatcoutner;
-	int				max_eat;
-	uint64_t		start_time;
-	uint64_t		time_to_die;
-	uint64_t		time_to_eat;
-	uint64_t		time_to_sleep;
-	t_philo			*philos;
-	sem_t			*semaforks;
-	sem_t			*semaskforks;
-	sem_t			*death;
-	sem_t			*write;
-	sem_t			*semaprocessdeath;
-}					t_banquet;
+	int						nb_philos;
+	int						globaleatcoutner;
+	int						max_eat;
+	uint64_t				start_time;
+	uint64_t				time_to_die;
+	uint64_t				time_to_eat;
+	uint64_t				time_to_sleep;
+	t_philo					*philos;
+	sem_t					*forks;
+	sem_t					*ask_forks;
+	sem_t					*death;
+	sem_t					*write;
+	sem_t					*process_death;
+}							t_banquet;
 
-t_banquet			g_banquet;
+t_banquet					g_banquet;
 
 /*
 ** main.c
 */
 
-void				*handle_max_eat(void *arg);
-void				*handle_death(void *philo_uncasted);
-int					philo_life(void *philo_uncasted);
-int					start_banquet(void);
-int					main(int ac, char **av);
+void						*handle_max_eat(void *arg);
+void						*handle_death(void *philo_uncasted);
+int							philo_life(void *philo_uncasted);
+int							start_banquet(void);
+int							main(int ac, char **av);
 
 /*
 ** init.c
 */
 
-void				semanames(char *name, int id, int eat);
-int					set_philos(void);
-int					set_semas(int philonum);
-int					check_config(void);
-int					parse_banquet_config(int ac, char **av);
+void						semanames(char *name, int id, int eat);
+int							set_philos(void);
+int							set_semas(int philonum);
+int							check_config(void);
+int							parse_banquet_config(int ac, char **av);
 
 /*
 ** actions.c
 */
 
-int					threadmax_eat(void);
-int					print_status(t_philo *philo, const int status);
-int					lock2forks(t_philo *philo);
-int					sleep_think(t_philo *philo);
-int					eat(t_philo *philo);
+void						ft_loop_usleep(unsigned int n);
+int							eat_sleep_think(t_philo *philo);
 
 /*
 ** logs.c
 */
 
-uint64_t			chrono(void);
+uint64_t					get_time(void);
+void						add_str_to_log(char *log, int *i, char *str);
+void						add_nb_to_log(char *log, int *index, uint64_t n);
+void        			    add_status_to_log(char *log, int *i, const int status);
+int							print_status(t_philo *philo, const int status);
 
 /*
 ** utils.c
 */
 
-int					strcompare(char *s1, char *s2);
-void				putstrfd(char *str, int fd);
-int					ft_atoi(char *str);
-void				putuint64_t(int fd, uint64_t nbr);
+void						ft_putstrfd(char *str, int fd);
+int							ft_atoi(char *str);
 
 /*
 ** end.c

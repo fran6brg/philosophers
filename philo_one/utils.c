@@ -6,21 +6,11 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:34 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 16:04:08 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:36:23 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-int					ft_strcomp(char *s1, char *s2)
-{
-	int i;
-
-	i = 0;
-	while (s1[i] && s1[i] == s2[i])
-		i++;
-	return (s1[i] - s2[i]);
-}
 
 void				ft_putstrfd(char *str, int fd)
 {

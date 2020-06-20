@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:40:49 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 00:21:31 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:08:42 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 ** ou alors 1 si philo-eat-id
 */
 
-static void		semanames(char *name, int id, int eat)
+void		semanames(char *name, int id, int eat)
 {
 	int			i;
 	const char	name1[6] = "philo-";
@@ -40,7 +40,7 @@ static void		semanames(char *name, int id, int eat)
 	name[i] = '\0';
 }
 
-static int		set_philos(void)
+int		set_philos(void)
 {
 	int			i;
 	char		name[50];
@@ -58,7 +58,7 @@ static int		set_philos(void)
 			return (RET_ERROR);
 		semanames(name, i + 1, EAT_INIT);
 		sem_unlink(name);
-		if ((g_banquet.philos[i].philosemaeatcount =
+		if ((g_banquet.philos[i].philo_eat_count =
 			sem_open(name, O_CREAT, 0666, 0)) == SEM_FAILED)
 			return (RET_ERROR);
 		i++;
@@ -66,22 +66,22 @@ static int		set_philos(void)
 	return (RET_SUCCESS);
 }
 
-static int		set_semas(int philonum)
+int		set_semas(int philonum)
 {
-	if ((g_banquet.semaforks =
-		sem_open(SEMAFORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
+	if ((g_banquet.forks =
+		sem_open(FORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
 		return (RET_ERROR);
-	if ((g_banquet.semaskforks =
+	if ((g_banquet.ask_forks =
 		sem_open(ASKTAKEFORKS, O_CREAT, 0666, 1)) == SEM_FAILED)
 		return (RET_ERROR);
 	if ((g_banquet.write =
-		sem_open(write, O_CREAT, 0666, 1)) == SEM_FAILED)
+		sem_open(WRITE, O_CREAT, 0666, 1)) == SEM_FAILED)
 		return (RET_ERROR);
 	if ((g_banquet.death =
 		sem_open(DEATH, O_CREAT, 0666, 0)) == SEM_FAILED)
 		return (RET_ERROR);
-	if ((g_banquet.semaprocessdeath =
-		sem_open(SEMAPROCESSDEATH, O_CREAT, 0666, 1)) == SEM_FAILED)
+	if ((g_banquet.process_death =
+		sem_open(PROCESSDEATH, O_CREAT, 0666, 1)) == SEM_FAILED)
 		return (RET_ERROR);
 	return (RET_SUCCESS);
 }
@@ -114,8 +114,6 @@ int				check_config(void)
 
 int				parse_banquet_config(int ac, char **av)
 {
-	ft_clean();
-// ????????????????????????
 	memset(&g_banquet, 0, sizeof(g_banquet));
 	g_banquet.nb_philos = ft_atoi(av[1]);
 	g_banquet.time_to_die = ft_atoi(av[2]);

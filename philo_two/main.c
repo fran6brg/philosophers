@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/13 16:39:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/18 17:03:32 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 17:57:04 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 /*
 ** Attention cette fonction est + complexe qu'elle en a l'air
 **
-** Pour rappel dans l'initphilos() on a lock le mutex philomutexeatcount
+** Pour rappel dans l'set_philos() on a lock le mutex philomutexeatcount
 ** Pour rappel, un philo ne mange jamais une deuxième fois quand un autre
 ** n'a pas encore mangé
 ** Sachant cela, on delock à chaque fois que le philo X mange et
@@ -68,7 +68,7 @@ void		*handle_death(void *philo_voided)
 	t_philo		*p;
 
 	p = (t_philo*)philo_voided;
-	while (42)
+	while (1)
 	{
 		if (sem_wait(p->eating))
 			return ((void *)RET_ERROR);
@@ -109,7 +109,7 @@ void		*philo_life(void *philo_uncasted)
 	if (pthread_create(&subthread, NULL, &handle_death, philo))
 		return ((void *)RET_ERROR);
 	pthread_detach(subthread);
-	while (42)
+	while (1)
 	{
 		if (eat(philo))
 			return ((void *)RET_ERROR);

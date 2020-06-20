@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/20 00:05:27 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/20 00:07:00 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/20 15:57:57 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,10 @@ int				ft_clean(void)
 	char		name[50];
 
 	i = -1;
-	sem_unlink(SEMAFORKS);
-	sem_unlink(write);
+	sem_unlink(FORKS);
+	sem_unlink(WRITE);
 	sem_unlink(DEATH);
-	sem_unlink(SEMAPROCESSDEATH);
+	sem_unlink(PROCESSDEATH);
 	sem_unlink(ASKTAKEFORKS);
 	if (g_banquet.philos)
 	{
@@ -51,10 +51,10 @@ int				ft_clean(void)
     }
 	free(g_banquet.philos);
 	g_banquet.philos = NULL;
-	sem_close(g_banquet.semaforks);
+	sem_close(g_banquet.forks);
 	sem_close(g_banquet.death);
 	sem_close(g_banquet.write);
-	sem_close(g_banquet.semaprocessdeath);
-	sem_close(g_banquet.semaskforks);
+	sem_close(g_banquet.process_death);
+	sem_close(g_banquet.ask_forks);
 	return (RET_ERROR);
 }
