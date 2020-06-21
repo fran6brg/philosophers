@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 01:21:47 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/21 01:38:16 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 01:57:39 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void				add_str_to_log(char *log, int *i, char *str)
 		log[(*i)++] = str[j];
 }
 
-void				add_nb_to_log(char *log, int *index, uint64_t n)
+void				add_nb_to_log(char *log, int *i, uint64_t n, char end)
 {
 	uint64_t		len;
 
@@ -38,9 +38,13 @@ void				add_nb_to_log(char *log, int *index, uint64_t n)
 		len *= 10;
 	while (len > 0)
 	{
-		log[(*index)++] = '0' + n / len % 10;
+		log[(*i)++] = '0' + n / len % 10;
 		len /= 10;
 	}
+	if (end == 0)
+		;
+	else
+		log[(*i)++] = end;
 }
 
 void				add_status_to_log(char *log, int *i, const int status)
@@ -71,25 +75,21 @@ void				print_status(t_philo *philo, const int status)
 	if (off == 0)
 	{
 		i = 0;
-		add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
-		add_str_to_log(log, &i, "\t");
+		add_nb_to_log(log, &i, get_time() - g_banquet.start_time, '\t');
+		pthread_mutex_lock(&g_banquet.write);
 		if (status == MAX_EAT_REACHED)
 		{
 			off = 1;
 			add_status_to_log(log, &i, status);
-			pthread_mutex_lock(&g_banquet.write);
 			write(1, log, i);
 			pthread_mutex_unlock(&g_banquet.write);
 			return ;
 		}
-		add_nb_to_log(log, &i, philo->pos + 1);
+		add_nb_to_log(log, &i, philo->pos + 1, ' ');
 		add_str_to_log(log, &i, " ");
 		add_status_to_log(log, &i, status);
-		pthread_mutex_lock(&g_banquet.write);
-		if (status == DIED)
-			off = 1;
-		if (!off)
-			write(1, log, i);
+		write(1, log, (!off ? i : 0));
+		off = status == DIED ? 1 : off;
 	}
 	pthread_mutex_unlock(&g_banquet.write);
 }

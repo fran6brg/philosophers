@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/16 20:07:04 by francisberg       #+#    #+#             */
-/*   Updated: 2020/06/21 01:38:51 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/21 02:00:15 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void				add_str_to_log(char *log, int *i, char *str)
 		log[(*i)++] = str[j];
 }
 
-void				add_nb_to_log(char *log, int *index, uint64_t n)
+void				add_nb_to_log(char *log, int *i, uint64_t n, char end)
 {
 	uint64_t		len;
 
@@ -38,9 +38,13 @@ void				add_nb_to_log(char *log, int *index, uint64_t n)
 		len *= 10;
 	while (len > 0)
 	{
-		log[(*index)++] = '0' + n / len % 10;
+		log[(*i)++] = '0' + n / len % 10;
 		len /= 10;
 	}
+	if (end == 0)
+		;
+	else
+		log[(*i)++] = end;
 }
 
 void				add_status_to_log(char *log, int *i, const int status)
@@ -71,27 +75,21 @@ int					print_status(t_philo *philo, const int status)
 	if (off == 0)
 	{
 		i = 0;
-		add_nb_to_log(log, &i, get_time() - g_banquet.start_time);
-		add_str_to_log(log, &i, "\t");
-		if (status == MAX_EAT_REACHED)
+		add_nb_to_log(log, &i, get_time() - g_banquet.start_time, '\t');
+		if (sem_wait(g_banquet.write))
+			return (RET_ERROR);
+		if (status == MAX_EAT_REACHED && (off = 1))
 		{
-			off = 1;
 			add_status_to_log(log, &i, status);
-			if (sem_wait(g_banquet.write))
-				return (RET_ERROR);
 			write(1, log, i);
 			return (sem_post(g_banquet.write) == 0 ? RET_SUCCESS : RET_ERROR);
 		}
-		add_nb_to_log(log, &i, philo->pos + 1);
-		add_str_to_log(log, &i, " ");
+		add_nb_to_log(log, &i, philo->pos + 1, ' ');
 		add_status_to_log(log, &i, status);
-		if (status == DIED)
-			off = 1;
-		if (sem_wait(g_banquet.write))
-			return (RET_ERROR);
+		off = status == DIED ? 1 : off;
 		write(1, log, i);
 	}
 	if (sem_post(g_banquet.write))
 		return (RET_ERROR);
-	return (off == 1 ? RET_ERROR : RET_SUCCESS);
+	return (off == 0 ? RET_SUCCESS : RET_ERROR);
 }
