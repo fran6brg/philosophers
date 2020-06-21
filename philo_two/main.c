@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:12:09 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:12:10 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/21 02:22:13 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,20 +59,20 @@ void			*handle_death(void *philo_voided)
 	return ((void *)RET_SUCCESS);
 }
 
-void			*philo_life(void *philo_uncasted)
+void			*philo_life(void *philo_voided)
 {
-	t_philo		*philo;
-	pthread_t	subthread;
+	t_philo		*p;
+	pthread_t	death;
 
-	philo = (t_philo*)philo_uncasted;
+	p = (t_philo*)philo_voided;
 	g_banquet.start_time = get_time();
-	philo->last_meal = get_time();
-	philo->death_time = philo->last_meal + g_banquet.time_to_die;
-	if (pthread_create(&subthread, NULL, &handle_death, philo))
+	p->last_meal = get_time();
+	p->death_time = p->last_meal + g_banquet.time_to_die;
+	if (pthread_create(&death, NULL, &handle_death, p))
 		return ((void *)RET_ERROR);
-	pthread_detach(subthread);
+	pthread_detach(death);
 	while (1)
-		if (eat_sleep_think(philo))
+		if (eat_sleep_think(p))
 			return ((void *)RET_ERROR);
 	return ((void *)RET_SUCCESS);
 }
@@ -80,22 +80,22 @@ void			*philo_life(void *philo_uncasted)
 int				start_banquet(void)
 {
 	int			i;
-	void		*philo;
-	pthread_t	thread;
+	void		*p;
+	pthread_t	max;
 
 	i = -1;
 	if (g_banquet.max_eat)
 	{
-		if (pthread_create(&thread, NULL, &handle_max_eat, NULL))
+		if (pthread_create(&max, NULL, &handle_max_eat, NULL))
 			return (RET_ERROR);
-		pthread_detach(thread);
+		pthread_detach(max);
 	}
 	while (++i < g_banquet.nb_philos)
 	{
-		philo = (void*)(&g_banquet.philos[i]);
-		if (pthread_create(&thread, NULL, &philo_life, philo))
+		p = (void *)(&g_banquet.philos[i]);
+		if (pthread_create(&max, NULL, &philo_life, p))
 			return (RET_ERROR);
-		pthread_detach(thread);
+		pthread_detach(max);
 		usleep(100);
 	}
 	return (RET_SUCCESS);

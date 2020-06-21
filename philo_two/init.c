@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:48 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:49 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/21 02:28:52 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 void			semanames(char *name, int id, int eat)
 {
 	int			i;
-	const char	name1[6] = "philo-";
-	const char	name2[10] = "philo-eat-";
+	const char	prefix[6] = "philo-";
+	const char	prefix_eat[10] = "philo-eat-";
 
 	i = -1;
 	if (eat)
 		while (++i < 10)
-			name[i] = name2[i];
+			name[i] = prefix_eat[i];
 	else
 		while (++i < 6)
-			name[i] = name1[i];
+			name[i] = prefix[i];
 	while (id)
 	{
 		name[i++] = (id % 10) + '0';

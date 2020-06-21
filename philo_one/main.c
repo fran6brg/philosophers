@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:00 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:10:02 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/21 02:26:23 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,12 @@ void			*handle_death(void *philo_voided)
 	}
 }
 
-void			*philo_life(void *philo_uncasted)
+void			*philo_life(void *philo_voided)
 {
 	t_philo		*p;
 	pthread_t	death;
 
-	p = (t_philo*)philo_uncasted;
+	p = (t_philo*)philo_voided;
 	g_banquet.start_time = get_time();
 	p->last_meal = g_banquet.start_time;
 	p->death_time = p->last_meal + g_banquet.time_to_die;
@@ -71,21 +71,21 @@ void			*philo_life(void *philo_uncasted)
 int				start_banquet(void)
 {
 	int			i;
-	pthread_t	thread;
+	pthread_t	t;
 
 	if (g_banquet.max_eat)
 	{
-		if (pthread_create(&thread, NULL, &handle_max_eat, NULL))
+		if (pthread_create(&t, NULL, &handle_max_eat, NULL))
 			return (RET_ERROR);
-		pthread_detach(thread);
+		pthread_detach(t);
 	}
 	i = 0;
 	while (i < g_banquet.nb_philos)
 	{
-		if (pthread_create(&thread, NULL, &philo_life,
+		if (pthread_create(&t, NULL, &philo_life,
 		(void *)(&g_banquet.philos[i++])))
 			return (RET_ERROR);
-		pthread_detach(thread);
+		pthread_detach(t);
 		usleep(100);
 	}
 	return (RET_SUCCESS);

@@ -1,5 +1,7 @@
 todo
--clean
+-checker similarites
+-refaire headers
+-checker imports et leurs utilites
 
 ok:
 -remove strcompare qui sert à r

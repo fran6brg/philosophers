@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:08 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:09 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/21 02:23:43 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,23 +35,23 @@ void			*handle_max_eat(void *arg)
 
 void			*handle_death(void *philo_voided)
 {
-	t_philo		*philo;
+	t_philo		*p;
 
-	philo = (t_philo*)philo_voided;
+	p = (t_philo*)philo_voided;
 	while (1)
 	{
-		if (sem_wait(philo->philosema))
+		if (sem_wait(p->philosema))
 			return ((void*)RET_ERROR);
-		if (philo->remainingtime < get_time())
+		if (p->remainingtime < get_time())
 		{
-			print_status(philo, DIED);
-			if (sem_post(philo->philosema))
+			print_status(p, DIED);
+			if (sem_post(p->philosema))
 				return ((void*)RET_ERROR);
 			if (sem_post(g_banquet.death))
 				return ((void*)RET_ERROR);
 			return ((void*)RET_SUCCESS);
 		}
-		if (sem_post(philo->philosema))
+		if (sem_post(p->philosema))
 			return ((void*)RET_ERROR);
 		usleep(1000);
 	}
@@ -60,18 +60,18 @@ void			*handle_death(void *philo_voided)
 
 int				philo_life(void *philo_voided)
 {
-	t_philo		*philo;
+	t_philo		*p;
 	pthread_t	death;
 
-	philo = (t_philo*)philo_voided;
+	p = (t_philo*)philo_voided;
 	usleep(100);
-	philo->last_meal = get_time();
-	philo->remainingtime = philo->last_meal + g_banquet.time_to_die;
-	if (pthread_create(&death, NULL, &handle_death, philo))
+	p->last_meal = get_time();
+	p->remainingtime = p->last_meal + g_banquet.time_to_die;
+	if (pthread_create(&death, NULL, &handle_death, p))
 		return (RET_ERROR);
 	pthread_detach(death);
 	while (1)
-		if (eat_sleep_think(philo))
+		if (eat_sleep_think(p))
 			return (RET_ERROR);
 	return (RET_SUCCESS);
 }

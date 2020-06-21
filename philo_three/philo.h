@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:14 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:15 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/21 02:22:13 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,8 +80,8 @@ t_banquet					g_banquet;
 */
 
 void						*handle_max_eat(void *arg);
-void						*handle_death(void *philo_uncasted);
-int							philo_life(void *philo_uncasted);
+void						*handle_death(void *philo_voided);
+int							philo_life(void *philo_voided);
 int							start_banquet(void);
 int							main(int ac, char **av);
 
