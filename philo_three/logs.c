@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   logs.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:01 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:02 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/22 18:46:13 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,13 +65,13 @@ void				add_status_to_log(char *log, int *i, const int status)
 		add_str_to_log(log, i, "died\n");
 }
 
-int					print_status(t_philo *philo, const int status)
+int					print_log(t_philo *philo, const int status)
 {
 	char			log[50];
 	int				i;
 
 	memset(log, 0, 50);
-	if (sem_wait(g_banquet.process_death))
+	if (sem_wait(g_banquet.off))
 		return (RET_ERROR);
 	i = 0;
 	add_nb_to_log(log, &i, get_time() - g_banquet.start_time, '\t');
@@ -83,8 +83,8 @@ int					print_status(t_philo *philo, const int status)
 	write(1, log, i);
 	if (sem_post(g_banquet.write))
 		return (RET_ERROR);
-	if (status != MAX_EAT_REACHED && status != DIED)
-		if (sem_post(g_banquet.process_death))
+	if (status != DIED && status != MAX_EAT_REACHED)
+		if (sem_post(g_banquet.off))
 			return (RET_ERROR);
 	return (RET_SUCCESS);
 }

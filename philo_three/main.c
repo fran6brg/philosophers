@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:08 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:23:43 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ void			*handle_max_eat(void *arg)
 	{
 		i = -1;
 		while (++i < g_banquet.nb_philos)
-			if (sem_wait(g_banquet.philos[i].philo_eat_count))
+			if (sem_wait(g_banquet.philos[i].eat_count))
 				return ((void *)RET_ERROR);
 	}
-	if (print_status(NULL, MAX_EAT_REACHED))
+	if (print_log(NULL, MAX_EAT_REACHED))
 		return ((void *)RET_ERROR);
 	if (sem_post(g_banquet.death))
 		return ((void *)RET_ERROR);
@@ -40,18 +40,18 @@ void			*handle_death(void *philo_voided)
 	p = (t_philo*)philo_voided;
 	while (1)
 	{
-		if (sem_wait(p->philosema))
+		if (sem_wait(p->eating))
 			return ((void*)RET_ERROR);
-		if (p->remainingtime < get_time())
+		if (p->death_time < get_time())
 		{
-			print_status(p, DIED);
-			if (sem_post(p->philosema))
+			print_log(p, DIED);
+			if (sem_post(p->eating))
 				return ((void*)RET_ERROR);
 			if (sem_post(g_banquet.death))
 				return ((void*)RET_ERROR);
 			return ((void*)RET_SUCCESS);
 		}
-		if (sem_post(p->philosema))
+		if (sem_post(p->eating))
 			return ((void*)RET_ERROR);
 		usleep(1000);
 	}
@@ -66,7 +66,7 @@ int				philo_life(void *philo_voided)
 	p = (t_philo*)philo_voided;
 	usleep(100);
 	p->last_meal = get_time();
-	p->remainingtime = p->last_meal + g_banquet.time_to_die;
+	p->death_time = p->last_meal + g_banquet.time_to_die;
 	if (pthread_create(&death, NULL, &handle_death, p))
 		return (RET_ERROR);
 	pthread_detach(death);
@@ -103,14 +103,14 @@ int				start_banquet(void)
 	return (RET_SUCCESS);
 }
 
-int				main(int ac, char **av)
+int				main(int argc, char *argv[])
 {
 	int			i;
 
 	i = 0;
-	if ((ac < 5 || ac > 6))
+	if ((argc < 5 || argc > 6))
 		return (ft_printerror("Wrong number of arguments\n", 0));
-	if (parse_banquet_config(ac, av))
+	if (parse_banquet_config(argc, argv))
 		return (ft_printerror("Argument out of range\n", 1));
 	if (start_banquet())
 		return (ft_printerror("Thread error\n", 1));

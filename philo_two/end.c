@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   end.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:42 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:43 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/22 18:15:46 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,25 +31,25 @@ int			ft_printerror(char *msg, int clean)
 int			ft_clean(void)
 {
 	int		i;
-	char	name[50];
+	char	sem_name[50];
 
+	sem_unlink(ASKFORKS);
+	sem_unlink(FORKS);
+	sem_unlink(WRITE);
+	sem_unlink(DEATH);
 	i = 0;
 	if (g_banquet.philos)
 	{
 		while (i < g_banquet.nb_philos)
 		{
-			semanames(name, i + 1, PHI_INIT);
-			sem_unlink(name);
-			semanames(name, i + 1, EAT_INIT);
-			sem_unlink(name);
+			get_name(sem_name, i + 1, PHI_INIT);
+			sem_unlink(sem_name);
+			get_name(sem_name, i + 1, EAT_INIT);
+			sem_unlink(sem_name);
 			i++;
 		}
 	}
 	free(g_banquet.philos);
 	g_banquet.philos = NULL;
-	sem_unlink(ASKTAKEFORKS);
-	sem_unlink(FORKS);
-	sem_unlink(WRITE);
-	sem_unlink(DEATH);
 	return (RET_ERROR);
 }

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:07 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:22:13 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ void						*handle_max_eat(void *arg);
 void						*handle_death(void *philo_voided);
 void						*philo_life(void *philo_voided);
 int							start_banquet(void);
-int							main(int ac, char **av);
+int							main(int argc, char *argv[]);
 
 /*
 ** init.c
@@ -77,7 +77,7 @@ int							main(int ac, char **av);
 int							set_philos(void);
 int							set_mutex(void);
 int							check_config(void);
-int							parse_banquet_config(int ac, char **av);
+int							parse_banquet_config(int argc, char *argv[]);
 
 /*
 ** actions.c
@@ -96,7 +96,7 @@ void						add_nb_to_log(char *buf, int *i, uint64_t n,
 void						add_str_to_log(char *buf, int *i, char *str);
 void						add_status_to_log(char *log, int *i,
 							const int status);
-void						print_status(t_philo *philo, const int status);
+void						print_log(t_philo *philo, const int status);
 
 /*
 ** utils.c

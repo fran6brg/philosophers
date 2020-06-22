@@ -6,13 +6,13 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:48 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:28:52 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 18:30:15 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void			semanames(char *name, int id, int eat)
+void			get_name(char *name, int id, int eat)
 {
 	int			i;
 	const char	prefix[6] = "philo-";
@@ -44,14 +44,14 @@ int				set_philos(void)
 		g_banquet.philos[i].pos = i;
 		g_banquet.philos[i].last_meal = 0;
 		g_banquet.philos[i].meal_count = 0;
-		semanames(name, i + 1, PHI_INIT);
+		get_name(name, i + 1, PHI_INIT);
 		sem_unlink(name);
 		if ((g_banquet.philos[i].eating =
 			sem_open(name, O_CREAT, 0666, 1)) == SEM_FAILED)
 			return (RET_ERROR);
-		semanames(name, i + 1, EAT_INIT);
+		get_name(name, i + 1, EAT_INIT);
 		sem_unlink(name);
-		if ((g_banquet.philos[i].meat_count =
+		if ((g_banquet.philos[i].eat_count =
 			sem_open(name, O_CREAT, 0666, 0)) == SEM_FAILED)
 			return (RET_ERROR);
 		i++;
@@ -59,13 +59,13 @@ int				set_philos(void)
 	return (RET_SUCCESS);
 }
 
-int				set_semas(int philonum)
+int				set_semas(void)
 {
-	if ((g_banquet.forks =
-		sem_open(FORKS, O_CREAT, 0666, philonum)) == SEM_FAILED)
-		return (RET_ERROR);
 	if ((g_banquet.ask_forks =
-		sem_open(ASKTAKEFORKS, O_CREAT, 0666, 1)) == SEM_FAILED)
+		sem_open(ASKFORKS, O_CREAT, 0666, 1)) == SEM_FAILED)
+		return (RET_ERROR);
+	if ((g_banquet.forks =
+		sem_open(FORKS, O_CREAT, 0666, g_banquet.nb_philos)) == SEM_FAILED)
 		return (RET_ERROR);
 	if ((g_banquet.write =
 		sem_open(WRITE, O_CREAT, 0666, 1)) == SEM_FAILED)
@@ -87,24 +87,21 @@ int				check_config(void)
 	return (RET_SUCCESS);
 }
 
-int				parse_banquet_config(int ac, char **av)
+int				parse_banquet_config(int argc, char *argv[])
 {
 	ft_clean();
 	memset(&g_banquet, 0, sizeof(g_banquet));
-	g_banquet.nb_philos = ft_atoi(av[1]);
-	g_banquet.time_to_die = ft_atoi(av[2]);
-	g_banquet.time_to_eat = ft_atoi(av[3]);
-	g_banquet.time_to_sleep = ft_atoi(av[4]);
-	g_banquet.max_eat = (ac == 6) ? ft_atoi(av[5]) : 0;
+	g_banquet.nb_philos = ft_atoi(argv[1]);
+	g_banquet.time_to_die = ft_atoi(argv[2]);
+	g_banquet.time_to_eat = ft_atoi(argv[3]);
+	g_banquet.time_to_sleep = ft_atoi(argv[4]);
+	g_banquet.max_eat = (argc == 6) ? ft_atoi(argv[5]) : 0;
 	if (check_config())
 		return (RET_ERROR);
 	g_banquet.philos = NULL;
-	g_banquet.globaleatcoutner = 0;
 	if (!(g_banquet.philos = malloc(sizeof(t_philo) * g_banquet.nb_philos)))
 		return (RET_ERROR);
-	if (set_philos())
-		return (RET_ERROR);
-	if (set_semas(g_banquet.nb_philos))
+	if (set_philos() || set_semas())
 		return (RET_ERROR);
 	return (RET_SUCCESS);
 }

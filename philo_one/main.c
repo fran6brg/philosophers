@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:00 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:26:23 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void			*handle_max_eat(void *arg)
 			pthread_mutex_lock(&g_banquet.philos[i++].eat_counter);
 		nb_times_philos_have_eaten++;
 	}
-	print_status(NULL, MAX_EAT_REACHED);
+	print_log(NULL, MAX_EAT_REACHED);
 	pthread_mutex_unlock(&g_banquet.stop_banquet);
 	return (0);
 }
@@ -42,7 +42,7 @@ void			*handle_death(void *philo_voided)
 		pthread_mutex_lock(&p->eating);
 		if (p->death_time < get_time())
 		{
-			print_status(p, DIED);
+			print_log(p, DIED);
 			pthread_mutex_unlock(&p->eating);
 			pthread_mutex_unlock(&g_banquet.stop_banquet);
 			return (0);
@@ -91,11 +91,11 @@ int				start_banquet(void)
 	return (RET_SUCCESS);
 }
 
-int				main(int ac, char **av)
+int				main(int argc, char *argv[])
 {
-	if ((ac < 5 || ac > 6))
+	if ((argc < 5 || argc > 6))
 		return (ft_printerror("Wrong number of arguments\n", 0));
-	if (parse_banquet_config(ac, av))
+	if (parse_banquet_config(argc, argv))
 		return (ft_printerror("Argument out of range\n", 1));
 	if (start_banquet())
 		return (ft_printerror("Thread error\n", 1));

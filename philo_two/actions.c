@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:36 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:11:37 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,41 +14,41 @@
 
 void		ft_loop_usleep(unsigned int n)
 {
-	uint64_t	start;
+	uint64_t	start_time;
 
-	start = get_time();
+	start_time = get_time();
 	while (1)
 	{
-		usleep(50);
-		if (get_time() - start >= n)
+		if (get_time() - start_time >= n)
 			break ;
+		usleep(50);
 	}
 }
 
-int			eat_sleep_think(t_philo *philo)
+int			eat_sleep_think(t_philo *p)
 {
 	if (sem_wait(g_banquet.ask_forks)
 	|| sem_wait(g_banquet.forks)
-	|| print_status(philo, HAS_TAKEN_A_FORK)
+	|| print_log(p, HAS_TAKEN_A_FORK)
 	|| sem_wait(g_banquet.forks)
-	|| print_status(philo, HAS_TAKEN_A_FORK)
+	|| print_log(p, HAS_TAKEN_A_FORK)
 	|| sem_post(g_banquet.ask_forks)
-	|| sem_wait(philo->eating))
+	|| sem_wait(p->eating))
 		return (RET_ERROR);
-	philo->last_meal = get_time();
-	philo->death_time = philo->last_meal + g_banquet.time_to_die;
-	if (print_status(philo, IS_EATING))
+	p->last_meal = get_time();
+	p->death_time = p->last_meal + g_banquet.time_to_die;
+	if (print_log(p, IS_EATING))
 		return (RET_ERROR);
-	philo->meal_count += 1;
+	p->meal_count += 1;
 	ft_loop_usleep(g_banquet.time_to_eat);
-	if (sem_post(philo->eating)
-	|| sem_post(philo->meat_count)
-	|| print_status(philo, IS_SLEEPING)
+	if (sem_post(p->eating)
+	|| sem_post(p->eat_count)
+	|| print_log(p, IS_SLEEPING)
 	|| sem_post(g_banquet.forks)
 	|| sem_post(g_banquet.forks))
 		return (RET_ERROR);
 	ft_loop_usleep(g_banquet.time_to_sleep);
-	if (print_status(philo, IS_THINKING))
+	if (print_log(p, IS_THINKING))
 		return (RET_ERROR);
 	usleep(1000);
 	return (RET_SUCCESS);

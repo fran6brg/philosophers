@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:12:15 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:22:13 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 # define WRITE				"/WRITE"
 # define DEATH				"/DEATH"
 # define TAKEFORKS			"/TAKEFORKS"
-# define ASKTAKEFORKS		"/ASKTAKEFORKS"
+# define ASKFORKS			"/ASKFORKS"
 
 typedef struct				s_philo
 {
@@ -50,13 +50,12 @@ typedef struct				s_philo
 	uint64_t				last_meal;
 	uint64_t				death_time;
 	sem_t					*eating;
-	sem_t					*meat_count;
+	sem_t					*eat_count;
 }							t_philo;
 
 typedef struct				s_banquet
 {
 	int						nb_philos;
-	int						globaleatcoutner;
 	int						max_eat;
 	uint64_t				start_time;
 	uint64_t				time_to_die;
@@ -79,17 +78,17 @@ void						*handle_max_eat(void *arg);
 void						*handle_death(void *philo_voided);
 void						*philo_life(void *philo_voided);
 int							start_banquet(void);
-int							main(int ac, char **av);
+int							main(int argc, char *argv[]);
 
 /*
 ** init.c
 */
 
-void						semanames(char *name, int id, int eat);
+void						get_name(char *name, int id, int eat);
 int							set_philos(void);
-int							set_semas(int philonum);
+int							set_semas(void);
 int							check_config(void);
-int							parse_banquet_config(int ac, char **av);
+int							parse_banquet_config(int argc, char *argv[]);
 
 /*
 ** actions.c
@@ -108,7 +107,7 @@ void						add_nb_to_log(char *buf, int *i, uint64_t n,
 							char end);
 void						add_status_to_log(char *log, int *i,
 							const int status);
-int							print_status(t_philo *philo, const int status);
+int							print_log(t_philo *philo, const int status);
 
 /*
 ** utils.c
