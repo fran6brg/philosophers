@@ -6,13 +6,13 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:40 by user42            #+#    #+#             */
-/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 21:49:15 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void		ft_loop_usleep(unsigned int n)
+void			ft_loop_usleep(unsigned int n)
 {
 	uint64_t	start_time;
 

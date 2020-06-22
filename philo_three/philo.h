@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:11:14 by user42            #+#    #+#             */
-/*   Updated: 2020/06/22 18:45:16 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 21:47:47 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 # define FORKS				"/FORKS"
 # define WRITE				"/WRITE"
 # define DEATH				"/DEATH"
-# define OFF		"/OFF"
+# define OFF				"/OFF"
 # define ASKFORKS			"/ASKFORKS"
 
 typedef struct				s_philo

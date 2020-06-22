@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:14 by user42            #+#    #+#             */
-/*   Updated: 2020/06/21 02:10:15 by user42           ###   ########.fr       */
+/*   Updated: 2020/06/22 21:47:09 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,16 @@ void				ft_putstrfd(char *str, int fd)
 {
 	int i;
 
-	i = -1;
-	while (str[++i])
-		write(fd, &str[i], 1);
+	i = 0;
+	while (str[i])
+		write(fd, &str[i++], 1);
 }
 
 int					ft_atoi(char *str)
 {
 	int		i;
 	int		sign;
-	int		result;
+	int		ret;
 
 	i = 0;
 	sign = 1;
@@ -37,11 +37,11 @@ int					ft_atoi(char *str)
 			sign = -1;
 		i++;
 	}
-	result = 0;
+	ret = 0;
 	while (str[i] >= '0' && str[i] <= '9')
 	{
-		result = result * 10 + (str[i] - '0');
+		ret = ret * 10 + (str[i] - '0');
 		i++;
 	}
-	return (result * sign);
+	return (ret * sign);
 }

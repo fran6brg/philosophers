@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:12:09 by user42            #+#    #+#             */
-/*   Updated: 2020/06/22 18:43:30 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 21:40:44 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ void			*handle_max_eat(void *arg)
 	int			nb_times_philos_have_eaten;
 	int			i;
 
-	(void)arg;
 	nb_times_philos_have_eaten = 0;
 	while (nb_times_philos_have_eaten < g_banquet.max_eat)
 	{
@@ -32,6 +31,7 @@ void			*handle_max_eat(void *arg)
 	if (sem_post(g_banquet.death))
 		return ((void *)RET_ERROR);
 	return ((void *)RET_SUCCESS);
+	(void)arg;
 }
 
 void			*handle_death(void *philo_voided)
@@ -41,6 +41,7 @@ void			*handle_death(void *philo_voided)
 	p = (t_philo*)philo_voided;
 	while (1)
 	{
+		usleep(1000);
 		if (sem_wait(p->eating))
 			return ((void *)RET_ERROR);
 		if (p->death_time < get_time())
@@ -54,7 +55,6 @@ void			*handle_death(void *philo_voided)
 		}
 		if (sem_post(p->eating))
 			return ((void *)RET_ERROR);
-		usleep(1000);
 	}
 	return ((void *)RET_SUCCESS);
 }
@@ -83,16 +83,16 @@ int				start_banquet(void)
 	void		*p;
 	pthread_t	max;
 
-	i = -1;
 	if (g_banquet.max_eat)
 	{
 		if (pthread_create(&max, NULL, &handle_max_eat, NULL))
 			return (RET_ERROR);
 		pthread_detach(max);
 	}
-	while (++i < g_banquet.nb_philos)
+	i = 0;
+	while (i < g_banquet.nb_philos)
 	{
-		p = (void *)(&g_banquet.philos[i]);
+		p = (void *)(&g_banquet.philos[i++]);
 		if (pthread_create(&max, NULL, &philo_life, p))
 			return (RET_ERROR);
 		pthread_detach(max);

@@ -6,7 +6,7 @@
 /*   By: francisberger <francisberger@student.42    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/21 02:10:47 by user42            #+#    #+#             */
-/*   Updated: 2020/06/22 18:45:16 by francisberg      ###   ########.fr       */
+/*   Updated: 2020/06/22 21:48:46 by francisberg      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,14 @@ int			ft_clean(void)
 	sem_unlink(WRITE);
 	sem_unlink(OFF);
 	sem_unlink(DEATH);
-	i = 0;
+	i = -1;
 	if (g_banquet.philos)
-		while (i < g_banquet.nb_philos)
+		while (++i < g_banquet.nb_philos)
 		{
 			get_name(sema_name, i + 1, PHI_INIT);
 			sem_unlink(sema_name);
 			get_name(sema_name, i + 1, EAT_INIT);
 			sem_unlink(sema_name);
-			i++;
 		}
 	free(g_banquet.philos);
 	g_banquet.philos = NULL;
